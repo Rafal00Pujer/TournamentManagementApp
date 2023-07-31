@@ -11,4 +11,9 @@
     <PackageReference Include="Terminal.Gui" Version="1.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="View\Dialogs\" />
+    <Folder Include="View\Windows\" />
+  </ItemGroup>
+
 </Project>
