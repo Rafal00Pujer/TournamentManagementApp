@@ -23,16 +23,13 @@ namespace TournamentManagementConsoleUi.View.Windows {
         
         private Terminal.Gui.Label descriptionLabel;
         
-        private Terminal.Gui.ScrollView laderScrollView;
-        
-        private Terminal.Gui.Button editMatchBtn;
+        private Terminal.Gui.ScrollView ladderScrollView;
         
         private Terminal.Gui.Button deleteTournamentBtn;
         
         private void InitializeComponent() {
             this.deleteTournamentBtn = new Terminal.Gui.Button();
-            this.editMatchBtn = new Terminal.Gui.Button();
-            this.laderScrollView = new Terminal.Gui.ScrollView();
+            this.ladderScrollView = new Terminal.Gui.ScrollView();
             this.descriptionLabel = new Terminal.Gui.Label();
             this.label2 = new Terminal.Gui.Label();
             this.gameNameLabel = new Terminal.Gui.Label();
@@ -81,23 +78,14 @@ namespace TournamentManagementConsoleUi.View.Windows {
             this.descriptionLabel.Text = "lorem ipsum";
             this.descriptionLabel.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.descriptionLabel);
-            this.laderScrollView.Width = Dim.Fill(0);
-            this.laderScrollView.Height = 20;
-            this.laderScrollView.X = 0;
-            this.laderScrollView.Y = Pos.Bottom(label2) + 1;
-            this.laderScrollView.ContentSize = new Size(20,10);
-            this.laderScrollView.Data = "laderScrollView";
-            this.laderScrollView.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.Add(this.laderScrollView);
-            this.editMatchBtn.Width = 14;
-            this.editMatchBtn.Height = 1;
-            this.editMatchBtn.X = 1;
-            this.editMatchBtn.Y = 25;
-            this.editMatchBtn.Data = "editMatchBtn";
-            this.editMatchBtn.Text = "Edit Match";
-            this.editMatchBtn.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.editMatchBtn.IsDefault = false;
-            this.Add(this.editMatchBtn);
+            this.ladderScrollView.Width = Dim.Fill(0);
+            this.ladderScrollView.Height = 20;
+            this.ladderScrollView.X = 0;
+            this.ladderScrollView.Y = Pos.Bottom(label2) + 1;
+            this.ladderScrollView.ContentSize = new Size(1000,2000);
+            this.ladderScrollView.Data = "ladderScrollView";
+            this.ladderScrollView.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.Add(this.ladderScrollView);
             this.deleteTournamentBtn.Width = 21;
             this.deleteTournamentBtn.Height = 1;
             this.deleteTournamentBtn.X = 19;

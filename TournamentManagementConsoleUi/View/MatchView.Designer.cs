@@ -19,30 +19,27 @@ namespace TournamentManagementConsoleUi.View {
         
         private Terminal.Gui.Label firstTeamLabel;
         
-        private Terminal.Gui.Label firstTeamSet1Label;
-        
         private Terminal.Gui.Label secondTeamLabel;
         
-        private Terminal.Gui.Label secondTeamSet1Label;
+        private Terminal.Gui.Button editBtn;
         
         private void InitializeComponent() {
-            this.secondTeamSet1Label = new Terminal.Gui.Label();
+            this.editBtn = new Terminal.Gui.Button();
             this.secondTeamLabel = new Terminal.Gui.Label();
-            this.firstTeamSet1Label = new Terminal.Gui.Label();
             this.firstTeamLabel = new Terminal.Gui.Label();
             this.frameView = new Terminal.Gui.FrameView();
-            this.Width = Dim.Fill(0);
-            this.Height = Dim.Fill(3);
+            this.Width = 20;
+            this.Height = 6;
             this.X = 0;
             this.Y = 0;
             this.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.frameView.Width = Dim.Fill(10);
-            this.frameView.Height = Dim.Fill(5);
+            this.frameView.Width = 20;
+            this.frameView.Height = 6;
             this.frameView.X = 0;
             this.frameView.Y = 0;
             this.frameView.Data = "frameView";
             this.frameView.Border.BorderStyle = Terminal.Gui.BorderStyle.Single;
-            this.frameView.Border.BorderBrush = Terminal.Gui.Color.BrightBlue;
+            this.frameView.Border.BorderBrush = Terminal.Gui.Color.BrightGreen;
             this.frameView.Border.Effect3D = false;
             this.frameView.Border.Effect3DBrush = null;
             this.frameView.Border.DrawMarginFrame = true;
@@ -57,14 +54,6 @@ namespace TournamentManagementConsoleUi.View {
             this.firstTeamLabel.Text = "First Team";
             this.firstTeamLabel.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.frameView.Add(this.firstTeamLabel);
-            this.firstTeamSet1Label.Width = 2;
-            this.firstTeamSet1Label.Height = 1;
-            this.firstTeamSet1Label.X = Pos.Right(firstTeamLabel);
-            this.firstTeamSet1Label.Y = Pos.Top(firstTeamLabel);
-            this.firstTeamSet1Label.Data = "firstTeamSet1Label";
-            this.firstTeamSet1Label.Text = "999";
-            this.firstTeamSet1Label.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.frameView.Add(this.firstTeamSet1Label);
             this.secondTeamLabel.Width = 20;
             this.secondTeamLabel.Height = 1;
             this.secondTeamLabel.X = 0;
@@ -73,14 +62,15 @@ namespace TournamentManagementConsoleUi.View {
             this.secondTeamLabel.Text = "Second Team";
             this.secondTeamLabel.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.frameView.Add(this.secondTeamLabel);
-            this.secondTeamSet1Label.Width = 2;
-            this.secondTeamSet1Label.Height = 1;
-            this.secondTeamSet1Label.X = Pos.Right(secondTeamLabel);
-            this.secondTeamSet1Label.Y = Pos.Top(secondTeamLabel);
-            this.secondTeamSet1Label.Data = "secondTeamSet1Label";
-            this.secondTeamSet1Label.Text = "999";
-            this.secondTeamSet1Label.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.frameView.Add(this.secondTeamSet1Label);
+            this.editBtn.Width = 20;
+            this.editBtn.Height = 1;
+            this.editBtn.X = 0;
+            this.editBtn.Y = 3;
+            this.editBtn.Data = "editBtn";
+            this.editBtn.Text = "Edit";
+            this.editBtn.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.editBtn.IsDefault = false;
+            this.frameView.Add(this.editBtn);
         }
     }
 }

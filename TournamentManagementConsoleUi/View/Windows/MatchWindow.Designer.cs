@@ -23,7 +23,7 @@ namespace TournamentManagementConsoleUi.View.Windows {
         
         private Terminal.Gui.Label secondTeamLabel;
         
-        private Terminal.Gui.ListView listView;
+        private Terminal.Gui.ListView setsListView;
         
         private Terminal.Gui.Label label2;
         
@@ -47,7 +47,7 @@ namespace TournamentManagementConsoleUi.View.Windows {
             this.secondScoreTextField = new Terminal.Gui.TextField();
             this.firstScoreTextField = new Terminal.Gui.TextField();
             this.label2 = new Terminal.Gui.Label();
-            this.listView = new Terminal.Gui.ListView();
+            this.setsListView = new Terminal.Gui.ListView();
             this.secondTeamLabel = new Terminal.Gui.Label();
             this.firstTeamLabel = new Terminal.Gui.Label();
             this.dateField = new Terminal.Gui.DateField();
@@ -97,19 +97,19 @@ namespace TournamentManagementConsoleUi.View.Windows {
             this.secondTeamLabel.Text = "Second Team Name";
             this.secondTeamLabel.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.secondTeamLabel);
-            this.listView.Width = 40;
-            this.listView.Height = 6;
-            this.listView.X = 4;
-            this.listView.Y = 5;
-            this.listView.Data = "listView";
-            this.listView.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.listView.Source = new Terminal.Gui.ListWrapper(new string[] {
+            this.setsListView.Width = 40;
+            this.setsListView.Height = 6;
+            this.setsListView.X = 4;
+            this.setsListView.Y = 5;
+            this.setsListView.Data = "setsListView";
+            this.setsListView.TextAlignment = Terminal.Gui.TextAlignment.Centered;
+            this.setsListView.Source = new Terminal.Gui.ListWrapper(new string[] {
                         "              999 999",
                         "Item2",
                         "Item3"});
-            this.listView.AllowsMarking = false;
-            this.listView.AllowsMultipleSelection = true;
-            this.Add(this.listView);
+            this.setsListView.AllowsMarking = false;
+            this.setsListView.AllowsMultipleSelection = true;
+            this.Add(this.setsListView);
             this.label2.Width = 2;
             this.label2.Height = 1;
             this.label2.X = 50;

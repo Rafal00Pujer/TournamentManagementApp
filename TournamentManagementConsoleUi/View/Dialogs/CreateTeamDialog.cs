@@ -7,14 +7,39 @@
 //      You can make changes to this file and they will not be overwritten when saving.
 //  </auto-generated>
 // -----------------------------------------------------------------------------
-namespace TournamentManagementConsoleUi.View.Dialogs {
-    using Terminal.Gui;
-    
-    
-    public partial class CreateTeamDialog {
-        
-        public CreateTeamDialog() {
+using Terminal.Gui;
+
+#nullable enable
+
+namespace TournamentManagementConsoleUi.View.Dialogs
+{
+    public partial class CreateTeamDialog
+    {
+        public CreateTeamDialog()
+        {
             InitializeComponent();
+
+            addTeamBtn.Clicked += AddTeamBtnClicked;
+        }
+
+        private void AddTeamBtnClicked()
+        {
+            var name = nameTextField.Text.ToString();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.ErrorQuery("Create Team Error", "The name field must be filled in.", "Ok");
+
+                return;
+            }
+            else
+            {
+                name = name.Trim();
+            }
+
+            Data = name;
+
+            Application.RequestStop();
         }
     }
 }

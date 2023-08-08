@@ -7,14 +7,48 @@
 //      You can make changes to this file and they will not be overwritten when saving.
 //  </auto-generated>
 // -----------------------------------------------------------------------------
-namespace TournamentManagementConsoleUi.View.Windows {
-    using Terminal.Gui;
-    
-    
-    public partial class TorunamentsListWindow {
-        
-        public TorunamentsListWindow() {
+using Terminal.Gui;
+using TournamentManagementConsoleUi.Logic.Model;
+
+#nullable enable
+
+namespace TournamentManagementConsoleUi.View.Windows
+{
+    public partial class TorunamentsListWindow
+    {
+        private readonly List<TournamentBasicModel> _tournaments;
+
+        public TorunamentsListWindow()
+        {
             InitializeComponent();
+
+            _tournaments = Program.TournamentService.GetTournamentList();
+
+            tournamentsListView.SetSource(_tournaments);
+
+            createTournamentBtn.Clicked += CreateTournamentBtnClicked;
+            openTournamentBtn.Clicked += OpenTournamentBtnClicked;
+        }
+
+        private void OpenTournamentBtnClicked()
+        {
+            var selectedTournamentIdnex = tournamentsListView.SelectedItem;
+
+            if (selectedTournamentIdnex < 0 || selectedTournamentIdnex >= _tournaments.Count)
+            {
+                return;
+            }
+
+            var selectedTournament = _tournaments[selectedTournamentIdnex];
+
+            var tournamentId = selectedTournament.Id;
+
+            Program.ChangeTopLevel(new TournamentWindow(tournamentId));
+        }
+
+        private void CreateTournamentBtnClicked()
+        {
+            Program.ChangeTopLevel(new CreateTournamentWindow());
         }
     }
 }

@@ -1,12 +1,25 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Text.Json;
 
 namespace TournamentManagementConsoleUi.Logic.Database;
 
 public class JsonDatabase : IDatabase
 {
+    private const string DatabaseFolder = "Database/Json";
+
+    public JsonDatabase()
+    {
+        var databasePath = Path.Combine(Directory.GetCurrentDirectory(), DatabaseFolder);
+
+        if (!Directory.Exists(databasePath))
+        {
+            Directory.CreateDirectory(databasePath);
+        }
+    }
+
     #region Tournament Record
 
-    private const string TournamentRecordFile = "Database/Json/Tournament.json";
+    private const string TournamentRecordFile = DatabaseFolder + "/Tournament.json";
 
     public void UpdateTournamentRecord(TournamentRecord tournamentRecord)
     {
@@ -27,7 +40,7 @@ public class JsonDatabase : IDatabase
 
     #region Team Record
 
-    private const string TeamRecordFile = "Database/Json/Team.json";
+    private const string TeamRecordFile = DatabaseFolder + "/Team.json";
 
     public void UpdateTeamRecord(TeamRecord teamRecord)
     {
@@ -48,7 +61,7 @@ public class JsonDatabase : IDatabase
 
     #region Match Record
 
-    private const string MatchRecordFile = "Database/Json/Match.json";
+    private const string MatchRecordFile = DatabaseFolder + "/Match.json";
 
     public void UpdateMatchRecord(MatchRecord matchRecord)
     {
@@ -69,7 +82,7 @@ public class JsonDatabase : IDatabase
 
     #region Set Record
 
-    private const string SetRecordFile = "Database/Json/Set.json";
+    private const string SetRecordFile = DatabaseFolder + "/Set.json";
 
     public void UpdateSetRecord(SetRecord setRecord)
     {
@@ -98,7 +111,7 @@ public class JsonDatabase : IDatabase
         {
             records.Remove(recordInDatabase);
 
-            SaveRecordsToFile(records, fileName);
+            SaveRecordsToFile<T>(records, fileName);
         }
     }
 
@@ -115,10 +128,10 @@ public class JsonDatabase : IDatabase
 
         records.Add(record);
 
-        SaveRecordsToFile(records, fileName);
+        SaveRecordsToFile<T>(records, fileName);
     }
 
-    private static void SaveRecordsToFile<T>(List<T> records, string fileName)
+    private static void SaveRecordsToFile<T>(IList records, string fileName)
     {
         var jsonString = JsonSerializer.Serialize(records);
 

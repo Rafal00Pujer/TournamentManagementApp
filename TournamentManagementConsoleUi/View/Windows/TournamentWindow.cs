@@ -7,14 +7,148 @@
 //      You can make changes to this file and they will not be overwritten when saving.
 //  </auto-generated>
 // -----------------------------------------------------------------------------
-namespace TournamentManagementConsoleUi.View.Windows {
-    using Terminal.Gui;
-    
-    
-    public partial class TournamentWindow {
-        
-        public TournamentWindow() {
+
+using System.Collections;
+using System.Diagnostics;
+using Terminal.Gui;
+using TournamentManagementConsoleUi.Logic.Model;
+
+#nullable enable
+
+namespace TournamentManagementConsoleUi.View.Windows
+{
+    public partial class TournamentWindow
+    {
+        private readonly Guid _tournamentId;
+        private readonly List<Guid> _matchIds;
+
+        public TournamentWindow(Guid tournamentId)
+        {
             InitializeComponent();
+
+            _tournamentId = tournamentId;
+
+            var tournament = Program.TournamentService.GetTournamentById(_tournamentId);
+
+            var matches = Program.MatchService.GetMatchesForTournament(_tournamentId);
+
+            _matchIds = matches.Select(m => m.Id).ToList();
+
+            Title = $"{tournament.Name} (Press Ctrl+Q to go back)";
+            gameNameLabel.Text = tournament.GameName;
+            descriptionLabel.Text = tournament.Description;
+
+            CreateLadder(matches);
+
+            AddCommand(Command.QuitToplevel, () => { Program.ChangeTopLevel(new TorunamentsListWindow()); return true; });
+
+            deleteTournamentBtn.Clicked += DeleteTournamentBtnClicked;
+        }
+
+        private void DeleteTournamentBtnClicked()
+        {
+            // delete sets
+            foreach (var matchId in _matchIds)
+            {
+                Program.SetService.DeleteSetsForMatch(matchId);
+            }
+
+            // delete matches
+            Program.MatchService.DeleteMatchesForTournament(_tournamentId);
+
+            // delete teams
+            Program.TeamService.DeleteTeamsForTournament(_tournamentId);
+
+            // delete tournament
+            Program.TournamentService.DeleteTournament(_tournamentId);
+
+            Program.ChangeTopLevel(new TorunamentsListWindow());
+        }
+
+        private void CreateLadder(IReadOnlyList<MatchWithDependencyModel> matches)
+        {
+            var finalMatch = matches.Count switch
+            {
+                1 => matches[0],
+                2 => matches.First(m => m.SecondPreviousMatch is not null),
+                _ => matches.First(m1 =>
+                    m1.FirstPreviousMatch is not null && m1.SecondPreviousMatch is not null && matches
+                        .Where(m2 => m2 != m1)
+                        .All(m2 => m2.FirstPreviousMatch != m1 && m2.SecondPreviousMatch != m1))
+            };
+
+            var maxDepth = 1;
+            Dictionary<(int depth, int position), MatchView> viewGraph = new();
+            Dictionary<int, int> depthMaxPositions = new() { { 1, 0 } };
+
+            CreateMatchViewNode(finalMatch, 1);
+
+            foreach (var ((depth, position), matchView) in viewGraph)
+            {
+                var paddingY = 0;
+                var x1 = 0;
+
+                for (var i = 0; i < maxDepth - 1 - depth; i++)
+                {
+                    paddingY *= 2;
+                    paddingY += MatchView.HeightConst / 2;
+
+                    x1 += MatchView.WidthConst + 1;
+                }
+
+                var y1 = paddingY;
+
+                for (var i = 1; i < position; i++)
+                {
+                    y1 += paddingY * 2;
+                    y1 += MatchView.HeightConst;
+                }
+
+                var location = new Point(x1, y1);
+
+                Debug.WriteLine($"{depth}, {position}: {location}");
+
+                matchView.SetAbsoluteLayout(location);
+            }
+
+            return;
+
+            void CreateMatchViewNode(MatchWithDependencyModel match, int depth)
+            {
+                var matchView = new MatchView(match, _tournamentId);
+                ladderScrollView.Add(matchView);
+
+                depthMaxPositions[depth] += 1;
+
+                viewGraph.Add((depth, depthMaxPositions[depth]), matchView);
+
+                var firstPreviousMatch = match.FirstPreviousMatch;
+                var secondPreviousMatch = match.SecondPreviousMatch;
+                var nextDepth = depth + 1;
+
+                maxDepth = Math.Max(maxDepth, nextDepth);
+
+                depthMaxPositions.TryAdd(nextDepth, 0);
+
+                if (firstPreviousMatch is not null)
+                {
+                    CreateMatchViewNode(firstPreviousMatch, nextDepth);
+                }
+                else
+                {
+                    depthMaxPositions[nextDepth] += 1;
+                }
+
+                if (secondPreviousMatch is not null)
+                {
+                    // ReSharper disable once TailRecursiveCall
+                    CreateMatchViewNode(secondPreviousMatch, nextDepth);
+                }
+                else
+                {
+                    depthMaxPositions[nextDepth] += 1;
+                }
+            }
         }
     }
 }

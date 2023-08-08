@@ -17,13 +17,13 @@ namespace TournamentManagementConsoleUi.View.Dialogs {
         
         private Terminal.Gui.Label label;
         
-        private Terminal.Gui.TextField textField;
+        private Terminal.Gui.TextField nameTextField;
         
         private Terminal.Gui.Button addTeamBtn;
         
         private void InitializeComponent() {
             this.addTeamBtn = new Terminal.Gui.Button();
-            this.textField = new Terminal.Gui.TextField();
+            this.nameTextField = new Terminal.Gui.TextField();
             this.label = new Terminal.Gui.Label();
             this.Width = Dim.Percent(78f);
             this.Height = Dim.Percent(43f);
@@ -45,15 +45,15 @@ namespace TournamentManagementConsoleUi.View.Dialogs {
             this.label.Text = "Name";
             this.label.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.label);
-            this.textField.Width = Dim.Fill(10);
-            this.textField.Height = 1;
-            this.textField.X = 5;
-            this.textField.Y = 0;
-            this.textField.Secret = false;
-            this.textField.Data = "textField";
-            this.textField.Text = "";
-            this.textField.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.Add(this.textField);
+            this.nameTextField.Width = Dim.Fill(10);
+            this.nameTextField.Height = 1;
+            this.nameTextField.X = 5;
+            this.nameTextField.Y = 0;
+            this.nameTextField.Secret = false;
+            this.nameTextField.Data = "nameTextField";
+            this.nameTextField.Text = "";
+            this.nameTextField.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.Add(this.nameTextField);
             this.addTeamBtn.Width = 12;
             this.addTeamBtn.Height = 1;
             this.addTeamBtn.X = Pos.Center();
