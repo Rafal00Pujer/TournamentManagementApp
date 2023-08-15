@@ -8,6 +8,8 @@ public interface ITournamentService
 
     public Guid CreateTournament(CreateTournamentModel model);
 
+    public TournamentBasicModel GetTournamentBasicById(Guid id);
+
     public TournamentModel GetTournamentById(Guid id);
 
     public void DeleteTournament(Guid id);

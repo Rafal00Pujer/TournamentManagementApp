@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using TournamentManagementLogic.Database;
+﻿using TournamentManagementLogic.Database;
 using TournamentManagementLogic.Model;
 using TournamentManagementLogic.Service.Interfaces;
 
@@ -89,10 +88,32 @@ public class TournamentService : ITournamentService
         new TournamentBasicModel()
         {
             Id = tournament.Id,
-            Name = tournament.Name
+            Name = tournament.Name,
+            GameName = tournament.GameName,
+            Description = tournament.Description
         });
 
         return tournamentsBasic.ToList();
+    }
+
+    public TournamentBasicModel GetTournamentBasicById(Guid id)
+    {
+        var tournamentRecords = _database.GetTournamentRecords();
+
+        var tournament = tournamentRecords.FirstOrDefault(t => t.Id == id);
+
+        if (tournament is not null)
+        {
+            return new TournamentBasicModel
+            {
+                Id = tournament.Id,
+                Name = tournament.Name,
+                GameName = tournament.GameName,
+                Description = tournament.Description
+            };
+        }
+
+        return new TournamentBasicModel();
     }
 
     public TournamentModel GetTournamentById(Guid id)
@@ -119,9 +140,32 @@ public class TournamentService : ITournamentService
     {
         var tournamentRecord = _database.GetTournamentRecords().FirstOrDefault(t => t.Id == id);
 
-        if (tournamentRecord is not null)
+        if (tournamentRecord is null)
         {
-            _database.DeleteTournamentRecord(tournamentRecord);
+            return;
         }
+
+        // delete matches
+        var matchRecords = _database.GetMatchRecords().Where(m => m.TournamentId == id);
+        foreach (var matchRecord in matchRecords)
+        {
+            _database.DeleteMatchRecord(matchRecord);
+
+            // delete sets
+            var setRecords = _database.GetSetRecords().Where(s => s.MatchId == matchRecord.Id);
+            foreach (var setRecord in setRecords)
+            {
+                _database.DeleteSetRecord(setRecord);
+            }
+        }
+
+        // delete teams
+        var teamRecords = _database.GetTeamRecords().Where(t => t.TournamentId == id);
+        foreach (var teamRecord in teamRecords)
+        {
+            _database.DeleteTeamRecord(teamRecord);
+        }
+
+        _database.DeleteTournamentRecord(tournamentRecord);
     }
 }
