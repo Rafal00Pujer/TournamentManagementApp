@@ -6,7 +6,7 @@ public interface ITournamentService
 {
     public List<TournamentBasicModel> GetTournamentList();
 
-    public Guid CreateTournament(string name, string gameName, string description);
+    public Guid CreateTournament(CreateTournamentModel model);
 
     public TournamentModel GetTournamentById(Guid id);
 

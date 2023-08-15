@@ -1,7 +1,24 @@
+using TournamentManagementLogic.Database;
+using TournamentManagementLogic.Service.Interfaces;
+using TournamentManagementLogic.Service;
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+var mvcBuilder = builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<IDatabase, JsonDatabase>();
+builder.Services.AddSingleton<ITournamentService, TournamentService>();
+builder.Services.AddSingleton<ITeamService, TeamService>();
+builder.Services.AddSingleton<IMatchService, MatchService>();
+builder.Services.AddSingleton<ISetService, SetService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
+
 
 var app = builder.Build();
 

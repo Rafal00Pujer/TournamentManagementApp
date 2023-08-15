@@ -4,7 +4,7 @@ using TournamentManagementLogic.Service.Interfaces;
 
 namespace TournamentManagementLogic.Service;
 
-internal class SetService : ISetService
+public class SetService : ISetService
 {
     private readonly IDatabase _database;
 

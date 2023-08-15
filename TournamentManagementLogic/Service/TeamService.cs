@@ -5,7 +5,7 @@ using TournamentManagementLogic.Service.Interfaces;
 
 namespace TournamentManagementLogic.Service;
 
-internal class TeamService : ITeamService
+public class TeamService : ITeamService
 {
     private readonly IDatabase _database;
 
