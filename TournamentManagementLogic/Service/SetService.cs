@@ -49,7 +49,7 @@ public class SetService : ISetService
             nextSetNum = setRecordsForMatch.Max(s => s.SetNumber) + 1;
         }
 
-        var newSetRecord = new SetRecord(Guid.NewGuid(), matchId, nextSetNum, 0, 0);
+        var newSetRecord = new SetRecord(Guid.NewGuid(), matchId, nextSetNum, string.Empty, string.Empty);
 
         _database.UpdateSetRecord(newSetRecord);
 

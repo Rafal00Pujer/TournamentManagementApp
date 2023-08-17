@@ -48,5 +48,10 @@ namespace TournamentManagementMVC.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult Open(Guid id)
+        {
+            return View(_service.GetTournamentById(id));
+        }
     }
 }

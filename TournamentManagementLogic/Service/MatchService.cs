@@ -22,67 +22,69 @@ public class MatchService : IMatchService
         return newMatchRecord.Id;
     }
 
-    public List<MatchWithDependencyModel> GetMatchesForTournament(Guid tournamentId)
+    public List<MatchModel> GetMatchesForTournament(Guid tournamentId)
     {
-        var matchesInDatabase = _database.GetMatchRecords();
+        throw new NotImplementedException();
 
-        var matchesInTournament = matchesInDatabase.Where(m => m.TournamentId == tournamentId);
+        //var matchesInDatabase = _database.GetMatchRecords();
 
-        var matches = new List<MatchWithDependencyModel>();
+        //var matchesInTournament = matchesInDatabase.Where(m => m.TournamentId == tournamentId);
 
-        foreach (var matchRecord in matchesInTournament)
-        {
-            CreateMatch(matchRecord);
-        }
+        //var matches = new List<MatchModel>();
 
-        return matches;
+        //foreach (var matchRecord in matchesInTournament)
+        //{
+        //    CreateMatch(matchRecord);
+        //}
 
-        // ReSharper disable once LocalFunctionHidesMethod
-        MatchWithDependencyModel CreateMatch(MatchRecord matchRecord)
-        {
-            MatchWithDependencyModel? firstPreviousMatch = null;
-            MatchWithDependencyModel? secondPreviousMatch = null;
+        //return matches;
 
-            if (matchRecord.FirstPreviousMach is not null)
-            {
-                firstPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.FirstPreviousMach);
+        //// ReSharper disable once LocalFunctionHidesMethod
+        //MatchModel CreateMatch(MatchRecord matchRecord)
+        //{
+        //    MatchModel? firstPreviousMatch = null;
+        //    MatchModel? secondPreviousMatch = null;
 
-                if (firstPreviousMatch is null)
-                {
-                    var firstPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.FirstPreviousMach);
+        //    if (matchRecord.FirstPreviousMach is not null)
+        //    {
+        //        firstPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.FirstPreviousMach);
 
-                    firstPreviousMatch = CreateMatch(firstPreviousMatchRecord);
-                }
-            }
+        //        if (firstPreviousMatch is null)
+        //        {
+        //            var firstPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.FirstPreviousMach);
 
-            if (matchRecord.SecondPreviousMach is not null)
-            {
-                secondPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.SecondPreviousMach);
+        //            firstPreviousMatch = CreateMatch(firstPreviousMatchRecord);
+        //        }
+        //    }
 
-                if (secondPreviousMatch is null)
-                {
-                    var secondPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.SecondPreviousMach);
+        //    if (matchRecord.SecondPreviousMach is not null)
+        //    {
+        //        secondPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.SecondPreviousMach);
 
-                    secondPreviousMatch = CreateMatch(secondPreviousMatchRecord);
-                }
-            }
+        //        if (secondPreviousMatch is null)
+        //        {
+        //            var secondPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.SecondPreviousMach);
 
-            var newMatch = new MatchWithDependencyModel()
-            {
-                Id = matchRecord.Id,
-                Date = matchRecord.Date,
-                FirstTeam = matchRecord.FirstTeam,
-                SecondTeam = matchRecord.SecondTeam,
-                Winner = matchRecord.Winner,
+        //            secondPreviousMatch = CreateMatch(secondPreviousMatchRecord);
+        //        }
+        //    }
 
-                FirstPreviousMatch = firstPreviousMatch,
-                SecondPreviousMatch = secondPreviousMatch
-            };
+        //    var newMatch = new MatchModel()
+        //    {
+        //        Id = matchRecord.Id,
+        //        Date = matchRecord.Date,
+        //        FirstTeam = matchRecord.FirstTeam,
+        //        SecondTeam = matchRecord.SecondTeam,
+        //        Winner = matchRecord.Winner,
 
-            matches.Add(newMatch);
+        //        FirstPreviousMatch = firstPreviousMatch,
+        //        SecondPreviousMatch = secondPreviousMatch
+        //    };
 
-            return newMatch;
-        }
+        //    matches.Add(newMatch);
+
+        //    return newMatch;
+        //}
     }
 
     public void DeleteMatchesForTournament(Guid tournamentId)

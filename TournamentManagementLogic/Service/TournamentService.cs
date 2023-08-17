@@ -1,4 +1,5 @@
-﻿using TournamentManagementLogic.Database;
+﻿using System.Text.RegularExpressions;
+using TournamentManagementLogic.Database;
 using TournamentManagementLogic.Model;
 using TournamentManagementLogic.Service.Interfaces;
 
@@ -120,20 +121,106 @@ public class TournamentService : ITournamentService
     {
         var tournamentRecords = _database.GetTournamentRecords();
 
-        var tournament = tournamentRecords.FirstOrDefault(t => t.Id == id);
+        var tournamentRecord = tournamentRecords.FirstOrDefault(t => t.Id == id);
 
-        if (tournament is not null)
+        if (tournamentRecord is null)
         {
-            return new TournamentModel
-            {
-                Id = tournament.Id,
-                Name = tournament.Name,
-                GameName = tournament.GameName,
-                Description = tournament.Description
-            };
+            return new TournamentModel();
         }
 
-        return new TournamentModel();
+        var teamModels = _database.GetTeamRecords().Where(t => t.TournamentId == id).Select(t => new TeamModel { Id = t.Id, Name = t.Name }).ToList();
+
+        var matchRecords = _database.GetMatchRecords().Where(m => m.TournamentId == id).ToList();
+
+        var finalMatchRecord = GetFinalMatch(matchRecords);
+
+        var matchModels = new List<MatchModel>();
+
+        var finalMatchModel = CreateMatchModelRecursive(matchRecords, teamModels, finalMatchRecord, matchModels);
+
+        return new TournamentModel
+        {
+            Id = tournamentRecord.Id,
+            Name = tournamentRecord.Name,
+            GameName = tournamentRecord.GameName,
+            Description = tournamentRecord.Description,
+            FinalMatch = finalMatchModel,
+            Matches = matchModels
+        };
+    }
+
+    private static MatchRecord GetFinalMatch(IReadOnlyList<MatchRecord> matchRecords) =>
+        matchRecords.Count switch
+        {
+            1 => matchRecords[0],
+            2 => matchRecords.First(m => m.SecondPreviousMach is not null),
+            _ => matchRecords.First(m1 =>
+                m1.FirstPreviousMach is not null && m1.SecondPreviousMach is not null && matchRecords
+                    .Where(m2 => m2 != m1)
+                    .All(m2 => m2.FirstPreviousMach != m1.Id && m2.SecondPreviousMach != m1.Id))
+        };
+
+    private MatchModel CreateMatchModelRecursive(IReadOnlyList<MatchRecord> matchRecords, IReadOnlyList<TeamModel> teams, MatchRecord record, ICollection<MatchModel> matchModels)
+    {
+        var firstPreviousMatch = GetPreviousMatchModel(record.FirstPreviousMach);
+        var secondPreviousMatch = GetPreviousMatchModel(record.SecondPreviousMach);
+
+        var firstTeam = GetTeam(record.FirstTeam);
+        var secondTeam = GetTeam(record.SecondTeam);
+
+        TeamModel? winner = null;
+        if (record.Winner is not null)
+        {
+            if (record.Winner == record.FirstTeam)
+            {
+                winner = firstTeam;
+            }
+            else if (record.Winner == record.SecondTeam)
+            {
+                winner = secondTeam;
+            }
+        }
+
+        var sets = _database.GetSetRecords().Where(s => s.MatchId == record.Id).Select(s => new SetModel
+        {
+            Id = s.Id,
+            SetNumber = s.SetNumber,
+            FirstTeamScore = s.FirstTeamScore,
+            SecondTeamScore = s.SecondTeamScore,
+        }).ToList();
+
+        var matchModel = new MatchModel
+        {
+            Id = record.Id,
+            Date = record.Date,
+            FirstPreviousMatch = firstPreviousMatch,
+            SecondPreviousMatch = secondPreviousMatch,
+            FirstTeam = firstTeam,
+            SecondTeam = secondTeam,
+            Winner = winner,
+            Sets = sets
+        };
+
+        matchModels.Add(matchModel);
+
+        return matchModel;
+
+        MatchModel? GetPreviousMatchModel(Guid? previousMatchId)
+        {
+            if (previousMatchId is null)
+            {
+                return null;
+            }
+
+            var previousMatchRecord = matchRecords.First(m => m.Id == previousMatchId);
+
+            return CreateMatchModelRecursive(matchRecords, teams, previousMatchRecord, matchModels);
+        }
+
+        TeamModel? GetTeam(Guid? teamId)
+        {
+            return teamId is null ? null : teams.First(t => t.Id == teamId);
+        }
     }
 
     public void DeleteTournament(Guid id)

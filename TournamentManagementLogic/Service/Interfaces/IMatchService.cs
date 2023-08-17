@@ -6,7 +6,7 @@ public interface IMatchService
 {
     public Guid CreateMatch(Guid tournamentId, Guid? firstPreviousMatch, Guid? secondPreviousMatch, Guid? firstTeam, Guid? secondTeam);
 
-    public List<MatchWithDependencyModel> GetMatchesForTournament(Guid tournamentId);
+    public List<MatchModel> GetMatchesForTournament(Guid tournamentId);
 
     public void DeleteMatchesForTournament(Guid tournamentId);
 
