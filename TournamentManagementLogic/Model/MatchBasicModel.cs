@@ -1,38 +1,25 @@
-﻿namespace TournamentManagementLogic.Model;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TournamentManagementLogic.Model;
 
 public class MatchBasicModel
 {
+    [Required]
     public Guid Id { get; init; } = Guid.Empty;
 
+    [Required]
+    [Display(Name = "Date")]
+    [DataType(DataType.Date)]
+    [DisplayFormat(DataFormatString = "{0:O}", ApplyFormatInEditMode = true)]
     public DateOnly? Date { get; set; }
 
-    public Guid? FirstTeam { get; init; }
+    public TeamModel? FirstTeam { get; init; }
 
-    public Guid? SecondTeam { get; init; }
+    public TeamModel? SecondTeam { get; init; }
 
-    public Guid? Winner { get; set; }
+    public TeamModel? Winner { get; set; }
 
-    public void ClearWinner()
-    {
-        Winner = null;
-    }
-
-    public void SetWinner(int teamIndex)
-    {
-        switch (teamIndex)
-        {
-            case 0:
-                Winner = FirstTeam;
-                break;
-
-            case 1:
-                Winner = SecondTeam;
-                break;
-
-            default:
-                ClearWinner();
-                break;
-        }
-    }
+    [Display(Name = "Sets")]
+    public List<SetModel> Sets { get; init; } = new();
 }
 

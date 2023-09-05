@@ -93,12 +93,12 @@ public class SetService : ISetService
             return;
         }
 
-        var updatedSetRecord = setRecord with
+        setRecord = setRecord with
         {
             FirstTeamScore = model.FirstTeamScore,
             SecondTeamScore = model.SecondTeamScore
         };
 
-        _database.UpdateSetRecord(updatedSetRecord);
+        _database.UpdateSetRecord(setRecord);
     }
 }

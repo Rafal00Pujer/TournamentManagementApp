@@ -121,18 +121,18 @@
                         switch (match.Sets.Count)
                         {
                             case > 3:
-                                additionalColumns.Add((match.Sets[0].FirstTeamScore, match.Sets[0].FirstTeamScore));
+                                additionalColumns.Add((match.Sets[0].FirstTeamScore, match.Sets[0].SecondTeamScore));
                                 additionalColumns.Add(("...", "..."));
-                                additionalColumns.Add((match.Sets[^1].FirstTeamScore, match.Sets[^1].FirstTeamScore));
+                                additionalColumns.Add((match.Sets[^1].FirstTeamScore, match.Sets[^1].SecondTeamScore));
                                 break;
                             case > 0:
-                                additionalColumns.AddRange(match.Sets.Select(matchSet => (matchSet.FirstTeamScore, matchSet.FirstTeamScore)));
+                                additionalColumns.AddRange(match.Sets.Select(matchSet => (matchSet.FirstTeamScore, matchSet.SecondTeamScore)));
                                 break;
                         }
 
                         @if (match.Date is not null)
                         {
-                            <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark">@match.Date</div>
+                            <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark justify-content-center">@match.Date</div>
                         }
 
                         <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark">
@@ -171,7 +171,7 @@
                         </div>
 
                         <div class="row mt-1 mb-3">
-                            <button asp-controller="Match" asp-action="Edit" asp-route-id="@match.Id" type="button" class="btn btn-secondary">Edit</button>
+                            <a asp-controller="Match" asp-action="Edit" asp-route-matchId="@match.Id" type="button" class="btn btn-secondary">Edit</a>
                         </div>
                     }
 

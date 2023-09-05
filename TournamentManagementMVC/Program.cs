@@ -1,7 +1,6 @@
 using TournamentManagementLogic.Database;
 using TournamentManagementLogic.Service.Interfaces;
 using TournamentManagementLogic.Service;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

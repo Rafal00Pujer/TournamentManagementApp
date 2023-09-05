@@ -14,5 +14,5 @@ public interface IMatchService
 
     public void UpdateMatchDate(MatchBasicModel match);
 
-    public void UpdateMatchWinner(MatchBasicModel match);
+    public void UpdateMatchWinner(Guid matchId, Guid winnerId);
 }

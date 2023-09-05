@@ -1,0 +1,148 @@
+﻿@using TournamentManagementLogic.Model
+@model TournamentManagementLogic.Model.MatchBasicModel
+
+@{
+    ViewData["Title"] = "Edit match";
+    ViewData["MatchId"] = Model.Id;
+
+    var canSetWinner = Model.FirstTeam is not null && Model.SecondTeam is not null;
+}
+
+<div class="container text-wrap text-break">
+    <div class="row justify-content-center text-center mt-2">
+        @{
+            if (Model.FirstTeam is not null)
+            {
+                if (Model.FirstTeam == Model.Winner)
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="col-1 text-warning" viewBox="0 0 16 16">
+                        <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z" />
+                    </svg>
+                }
+                else if (canSetWinner)
+                {
+                    @* Set winner button *@
+                    <a type="submit" class="btn btn-primary col-1" asp-action="SetWinner" asp-route-matchId="@Model.Id" asp-route-winnerId="@Model.FirstTeam.Id"
+                       data-bs-toggle-tooltip="tooltip" data-bs-trigger="hover" data-bs-title="Set as winner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.294 9.48 6.484 10 7 10a.5.5 0 0 1 .5.5v2.61a1 1 0 0 1-.757.97l-1.426.356a.5.5 0 0 0-.179.085L4.5 15h7l-.638-.479a.501.501 0 0 0-.18-.085l-1.425-.356a1 1 0 0 1-.757-.97V10.5A.5.5 0 0 1 9 10c.516 0 1.706-.52 2.57-2.864.413-1.12.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z" />
+                        </svg>
+                    </a>
+                }
+
+                <span class="col-4">@Model.FirstTeam.Name</span>
+            }
+            else
+            {
+                <span class="col-4">-</span>
+            }
+        }
+
+        <div class="col-2">
+            <p>VS</p>
+        </div>
+
+        @{
+            if (Model.SecondTeam is not null)
+            {
+                <span class="col-4">@Model.SecondTeam.Name</span>
+
+                if (Model.SecondTeam == Model.Winner)
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="col-1 text-warning" viewBox="0 0 16 16">
+                        <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z" />
+                    </svg>
+                }
+                else if (canSetWinner)
+                {
+                    @* Set winner button *@
+                    <a type="submit" class="btn btn-primary col-1" asp-action="SetWinner" asp-route-matchId="@Model.Id" asp-route-winnerId="@Model.SecondTeam.Id"
+                       data-bs-toggle-tooltip="tooltip" data-bs-trigger="hover" data-bs-title="Set as winner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.294 9.48 6.484 10 7 10a.5.5 0 0 1 .5.5v2.61a1 1 0 0 1-.757.97l-1.426.356a.5.5 0 0 0-.179.085L4.5 15h7l-.638-.479a.501.501 0 0 0-.18-.085l-1.425-.356a1 1 0 0 1-.757-.97V10.5A.5.5 0 0 1 9 10c.516 0 1.706-.52 2.57-2.864.413-1.12.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z" />
+                        </svg>
+                    </a>
+                }
+            }
+            else
+            {
+                <span class="col-4">-</span>
+            }
+        }
+    </div>
+
+    <form class="row justify-content-center text-center" asp-action="SetDate">
+        <div class="text-danger col-12" asp-validation-summary="ModelOnly"></div>
+        <input asp-for="Id" hidden="true" />
+
+        <label class="col-form-label col-1" asp-for="Date"></label>
+
+        <div class="col-2">
+            <input class="form-control" asp-for="Date" />
+        </div>
+
+        @* Save button *@
+        <button type="submit" class="btn btn-primary col-1"
+                data-bs-toggle-tooltip="tooltip" data-bs-trigger="hover" data-bs-title="Save date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+            </svg>
+        </button>
+    </form>
+
+    <div class="row row-cols-1 justify-content-center text-center">
+        <label asp-for="Sets"></label>
+    </div>
+
+    @foreach (var setModel in Model.Sets)
+    {
+        <partial name="_SetPartial" model="setModel" />
+    }
+
+    <partial name="_SetPartial" model="new SetModel()" />
+</div>
+
+@* Delete Set Modal *@
+<div id="deleteSetModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete set</h1>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <span>Are you sure you want to remove this set?</span>
+            </div>
+            <div class="modal-footer">
+                @* Href will be set on modal activation. *@
+                <a id="confirmSetDeleteBtn" class="btn btn-danger px-5 mx-5">Yes</a>
+
+                <button class="btn btn-primary px-5 mx-5" type="button" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    @* Set hidden link for delete set modal. *@
+    <script type="text/javascript">
+        document.getElementById('deleteSetModal').addEventListener('show.bs.modal', event => {
+            var btn = event.relatedTarget;
+
+            var linkId = $(btn).attr('data-bs-link-id');
+
+            $('#confirmSetDeleteBtn').attr('href', $('#' + linkId).attr('href'));
+        })
+    </script>
+
+    @* tooltips *@
+    <script type="text/javascript">
+        tooltipTriggerList = document.querySelectorAll('[data-bs-toggle-tooltip="tooltip"]');
+        tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
+}

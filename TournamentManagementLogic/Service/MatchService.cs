@@ -108,13 +108,81 @@ public class MatchService : IMatchService
             return new MatchBasicModel();
         }
 
+        TeamModel? firstTeam = null;
+        TeamModel? secondTeam = null;
+        TeamModel? winner = null;
+
+        if (matchRecord.FirstTeam is not null)
+        {
+            var firstTeamRecord = _database.GetTeamRecords().FirstOrDefault(t => t.Id == matchRecord.FirstTeam);
+
+            if (firstTeamRecord is not null)
+            {
+                firstTeam = new TeamModel
+                {
+                    Id = firstTeamRecord.Id,
+                    Name = firstTeamRecord.Name,
+                };
+
+                if (firstTeamRecord.Id == matchRecord.Winner)
+                {
+                    winner = firstTeam;
+                }
+            }
+        }
+
+        if (matchRecord.SecondTeam is not null)
+        {
+            var secondTeamRecord = _database.GetTeamRecords().FirstOrDefault(t => t.Id == matchRecord.SecondTeam);
+
+            if (secondTeamRecord is not null)
+            {
+                secondTeam = new TeamModel
+                {
+                    Id = secondTeamRecord.Id,
+                    Name = secondTeamRecord.Name,
+                };
+
+                if (secondTeamRecord.Id == matchRecord.Winner)
+                {
+                    winner = secondTeam;
+                }
+            }
+        }
+
+        var sets = _database.GetSetRecords()
+            .Where(s => s.MatchId == matchRecord.Id)
+            .Select(s => new SetModel
+            {
+                Id = s.Id,
+                SetNumber = s.SetNumber,
+                FirstTeamScore = s.FirstTeamScore,
+                SecondTeamScore = s.SecondTeamScore
+            }).ToList();
+
+        sets.Sort((s1, s2) =>
+        {
+            if (s1.SetNumber < s2.SetNumber)
+            {
+                return -1;
+            }
+
+            if (s1.SetNumber > s2.SetNumber)
+            {
+                return 1;
+            }
+
+            return 0;
+        });
+
         return new MatchBasicModel
         {
             Id = matchRecord.Id,
             Date = matchRecord.Date,
-            FirstTeam = matchRecord.FirstTeam,
-            SecondTeam = matchRecord.SecondTeam,
-            Winner = matchRecord.Winner
+            FirstTeam = firstTeam,
+            SecondTeam = secondTeam,
+            Winner = winner,
+            Sets = sets
         };
     }
 
@@ -132,18 +200,23 @@ public class MatchService : IMatchService
         _database.UpdateMatchRecord(updatedMatchRecord);
     }
 
-    public void UpdateMatchWinner(MatchBasicModel match)
+    public void UpdateMatchWinner(Guid matchId, Guid winnerId)
     {
         var matchesInDatabase = _database.GetMatchRecords();
 
-        var matchToUpdate = matchesInDatabase.FirstOrDefault(m => m.Id == match.Id);
+        var matchToUpdate = matchesInDatabase.FirstOrDefault(m => m.Id == matchId);
 
-        if (matchToUpdate is null || matchToUpdate.Winner == match.Winner)
+        if (matchToUpdate is null)
         {
             return;
         }
 
-        matchToUpdate = matchToUpdate with { Winner = match.Winner };
+        if (matchToUpdate.FirstTeam != winnerId && matchToUpdate.SecondTeam != winnerId)
+        {
+            return;
+        }
+
+        matchToUpdate = matchToUpdate with { Winner = winnerId };
 
         _database.UpdateMatchRecord(matchToUpdate);
 
