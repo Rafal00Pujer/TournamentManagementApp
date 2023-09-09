@@ -29,12 +29,12 @@ namespace TournamentManagementMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("Edit", new { matchId = model.Id });
+                return RedirectToAction("Edit", new { matchId = model.MatchId });
             }
 
             _matchService.UpdateMatchDate(model);
 
-            return RedirectToAction("Edit", new { matchId = model.Id });
+            return RedirectToAction("Edit", new { matchId = model.MatchId });
         }
     }
 }

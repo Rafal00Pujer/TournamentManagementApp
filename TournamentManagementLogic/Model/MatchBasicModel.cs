@@ -4,8 +4,10 @@ namespace TournamentManagementLogic.Model;
 
 public class MatchBasicModel
 {
+    public Guid TournamentId { get; init; } = Guid.Empty;
+
     [Required]
-    public Guid Id { get; init; } = Guid.Empty;
+    public Guid MatchId { get; init; } = Guid.Empty;
 
     [Required]
     [Display(Name = "Date")]

@@ -47,11 +47,11 @@ public class MatchService : IMatchService
 
         //    if (matchRecord.FirstPreviousMach is not null)
         //    {
-        //        firstPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.FirstPreviousMach);
+        //        firstPreviousMatch = matches.FirstOrDefault(m => m.MatchId == matchRecord.FirstPreviousMach);
 
         //        if (firstPreviousMatch is null)
         //        {
-        //            var firstPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.FirstPreviousMach);
+        //            var firstPreviousMatchRecord = matchesInTournament.First(m => m.MatchId == matchRecord.FirstPreviousMach);
 
         //            firstPreviousMatch = CreateMatch(firstPreviousMatchRecord);
         //        }
@@ -59,11 +59,11 @@ public class MatchService : IMatchService
 
         //    if (matchRecord.SecondPreviousMach is not null)
         //    {
-        //        secondPreviousMatch = matches.FirstOrDefault(m => m.Id == matchRecord.SecondPreviousMach);
+        //        secondPreviousMatch = matches.FirstOrDefault(m => m.MatchId == matchRecord.SecondPreviousMach);
 
         //        if (secondPreviousMatch is null)
         //        {
-        //            var secondPreviousMatchRecord = matchesInTournament.First(m => m.Id == matchRecord.SecondPreviousMach);
+        //            var secondPreviousMatchRecord = matchesInTournament.First(m => m.MatchId == matchRecord.SecondPreviousMach);
 
         //            secondPreviousMatch = CreateMatch(secondPreviousMatchRecord);
         //        }
@@ -71,7 +71,7 @@ public class MatchService : IMatchService
 
         //    var newMatch = new MatchModel()
         //    {
-        //        Id = matchRecord.Id,
+        //        MatchId = matchRecord.MatchId,
         //        Date = matchRecord.Date,
         //        FirstTeam = matchRecord.FirstTeam,
         //        SecondTeam = matchRecord.SecondTeam,
@@ -177,7 +177,8 @@ public class MatchService : IMatchService
 
         return new MatchBasicModel
         {
-            Id = matchRecord.Id,
+            TournamentId = matchRecord.TournamentId,
+            MatchId = matchRecord.Id,
             Date = matchRecord.Date,
             FirstTeam = firstTeam,
             SecondTeam = secondTeam,
@@ -188,7 +189,7 @@ public class MatchService : IMatchService
 
     public void UpdateMatchDate(MatchBasicModel match)
     {
-        var matchRecord = _database.GetMatchRecords().FirstOrDefault(m => m.Id == match.Id);
+        var matchRecord = _database.GetMatchRecords().FirstOrDefault(m => m.Id == match.MatchId);
 
         if (matchRecord is null)
         {
