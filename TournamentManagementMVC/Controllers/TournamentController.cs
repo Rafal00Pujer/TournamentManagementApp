@@ -35,23 +35,16 @@ namespace TournamentManagementMVC.Controllers
 
             return RedirectToAction("Index");
         }
-
-        public IActionResult Delete(Guid id)
+        public IActionResult Delete(Guid tournamentId)
         {
-            return View(_service.GetTournamentBasicById(id));
-        }
-
-        [HttpPost]
-        public IActionResult ConfirmDelete(Guid id)
-        {
-            _service.DeleteTournament(id);
+            _service.DeleteTournament(tournamentId);
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Open(Guid id)
+        public IActionResult Open(Guid tournamentId)
         {
-            return View(_service.GetTournamentById(id));
+            return View(_service.GetTournamentById(tournamentId));
         }
     }
 }

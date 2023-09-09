@@ -39,8 +39,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    <a asp-action="Open" asp-route-id="@item.Id">Open</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Open" asp-route-tournamentId="@item.Id">Open</a>
                 </td>
             </tr>
         }
