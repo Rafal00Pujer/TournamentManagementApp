@@ -4,7 +4,7 @@ namespace TournamentManagementLogic.Service.Interfaces;
 
 public interface ISetService
 {
-    public List<SetModel> GetSetsForMatch(Guid matchId);
+    public IEnumerable<SetModel> GetSetsForMatch(Guid matchId);
 
     public void DeleteSetsForMatch(Guid matchId);
 
@@ -14,5 +14,5 @@ public interface ISetService
 
     public void DeleteSet(Guid id);
 
-    public void UpdateScores(SetModel model);
+    public void UpdateScores(Guid setId, string firstTeamScore, string secondTeamScore);
 }

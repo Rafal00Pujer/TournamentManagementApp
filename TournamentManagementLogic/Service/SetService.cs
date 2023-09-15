@@ -13,19 +13,20 @@ public class SetService : ISetService
         _database = database;
     }
 
-    public List<SetModel> GetSetsForMatch(Guid matchId)
+    public IEnumerable<SetModel> GetSetsForMatch(Guid matchId)
     {
-        var setRecords = _database.GetSetRecords().Where(s => s.MatchId == matchId);
+        var setModels = _database.GetSetRecords()
+            .Where(s => s.MatchId == matchId)
+            .OrderBy(s => s.SetNumber)
+            .Select(s => new SetModel
+            {
+                MatchId = s.MatchId,
+                SetId = s.Id,
+                FirstTeamScore = s.FirstTeamScore,
+                SecondTeamScore = s.SecondTeamScore
+            });
 
-        var setModels = setRecords.Select(m => new SetModel()
-        {
-            Id = m.Id,
-            SetNumber = m.SetNumber,
-            FirstTeamScore = m.FirstTeamScore,
-            SecondTeamScore = m.SecondTeamScore
-        });
-
-        return setModels.ToList();
+        return setModels;
     }
 
     public void DeleteSetsForMatch(Guid matchId)
@@ -40,11 +41,13 @@ public class SetService : ISetService
 
     public Guid CreateEmptySet(Guid matchId)
     {
-        var setRecordsForMatch = _database.GetSetRecords().Where(s => s.MatchId == matchId);
+        var setRecordsForMatch = _database.GetSetRecords()
+            .Where(s => s.MatchId == matchId)
+            .ToArray();
 
         var nextSetNum = 1;
 
-        if (setRecordsForMatch.Any())
+        if (setRecordsForMatch.Length > 0)
         {
             nextSetNum = setRecordsForMatch.Max(s => s.SetNumber) + 1;
         }
@@ -67,8 +70,8 @@ public class SetService : ISetService
 
         return new SetModel
         {
-            Id = setRecord.Id,
-            SetNumber = setRecord.SetNumber,
+            MatchId = setRecord.MatchId,
+            SetId = setRecord.Id,
             FirstTeamScore = setRecord.FirstTeamScore,
             SecondTeamScore = setRecord.SecondTeamScore
         };
@@ -84,9 +87,9 @@ public class SetService : ISetService
         }
     }
 
-    public void UpdateScores(SetModel model)
+    public void UpdateScores(Guid setId, string firstTeamScore, string secondTeamScore)
     {
-        var setRecord = _database.GetSetRecords().FirstOrDefault(s => s.Id == model.Id);
+        var setRecord = _database.GetSetRecords().FirstOrDefault(s => s.Id == setId);
 
         if (setRecord is null)
         {
@@ -95,8 +98,8 @@ public class SetService : ISetService
 
         setRecord = setRecord with
         {
-            FirstTeamScore = model.FirstTeamScore,
-            SecondTeamScore = model.SecondTeamScore
+            FirstTeamScore = firstTeamScore,
+            SecondTeamScore = secondTeamScore
         };
 
         _database.UpdateSetRecord(setRecord);

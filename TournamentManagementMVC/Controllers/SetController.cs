@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TournamentManagementLogic.Model;
-using TournamentManagementLogic.Service;
 using TournamentManagementLogic.Service.Interfaces;
+using TournamentManagementMVC.Models.Match;
 
 namespace TournamentManagementMVC.Controllers
 {
@@ -14,26 +13,21 @@ namespace TournamentManagementMVC.Controllers
             _setService = setService;
         }
 
-        public IActionResult Save(SetModel model, Guid matchId)
+        public IActionResult Save(MatchEditSetModel model, Guid matchId)
         {
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("Edit", "Match", new { matchId });
             }
 
-            if (model.Id == Guid.Empty || model.SetNumber == 0)
+            if (model.SetId == Guid.Empty)
             {
                 var newSetId = _setService.CreateEmptySet(matchId);
 
-                var newSetModel = _setService.GetSet(newSetId);
-
-                newSetModel.FirstTeamScore = model.FirstTeamScore;
-                newSetModel.SecondTeamScore = model.SecondTeamScore;
-
-                model = newSetModel;
+                model.SetId = newSetId;
             }
 
-            _setService.UpdateScores(model);
+            _setService.UpdateScores(model.SetId, model.FirstTeamScore, model.SecondTeamScore);
 
             return RedirectToAction("Edit", "Match", new { matchId });
         }

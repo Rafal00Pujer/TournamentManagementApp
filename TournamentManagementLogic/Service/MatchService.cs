@@ -7,175 +7,39 @@ namespace TournamentManagementLogic.Service;
 public class MatchService : IMatchService
 {
     private readonly IDatabase _database;
+    private readonly ITeamService _teamService;
+    private readonly ISetService _setService;
 
-    public MatchService(IDatabase database)
+    public MatchService(IDatabase database, ITeamService teamService, ISetService setService)
     {
         _database = database;
+        _teamService = teamService;
+        _setService = setService;
     }
 
-    public Guid CreateMatch(Guid tournamentId, Guid? firstPreviousMatch, Guid? secondPreviousMatch, Guid? firstTeam, Guid? secondTeam)
+    public IEnumerable<Guid> CreateMatchesForTournament(Guid tournamentId, IEnumerable<Guid> teamsIds)
     {
-        var newMatchRecord = new MatchRecord(Guid.NewGuid(), tournamentId, null, firstPreviousMatch, secondPreviousMatch, firstTeam, secondTeam, null);
+        var newMatchesIds = new List<Guid>();
 
-        _database.UpdateMatchRecord(newMatchRecord);
+        _ = CreateMatchRecursive(teamsIds.ToArray(), tournamentId, newMatchesIds);
 
-        return newMatchRecord.Id;
+        return newMatchesIds;
     }
 
-    public List<MatchModel> GetMatchesForTournament(Guid tournamentId)
-    {
-        throw new NotImplementedException();
-
-        //var matchesInDatabase = _database.GetMatchRecords();
-
-        //var matchesInTournament = matchesInDatabase.Where(m => m.TournamentId == tournamentId);
-
-        //var matches = new List<MatchModel>();
-
-        //foreach (var matchRecord in matchesInTournament)
-        //{
-        //    CreateMatch(matchRecord);
-        //}
-
-        //return matches;
-
-        //// ReSharper disable once LocalFunctionHidesMethod
-        //MatchModel CreateMatch(MatchRecord matchRecord)
-        //{
-        //    MatchModel? firstPreviousMatch = null;
-        //    MatchModel? secondPreviousMatch = null;
-
-        //    if (matchRecord.FirstPreviousMach is not null)
-        //    {
-        //        firstPreviousMatch = matches.FirstOrDefault(m => m.MatchId == matchRecord.FirstPreviousMach);
-
-        //        if (firstPreviousMatch is null)
-        //        {
-        //            var firstPreviousMatchRecord = matchesInTournament.First(m => m.MatchId == matchRecord.FirstPreviousMach);
-
-        //            firstPreviousMatch = CreateMatch(firstPreviousMatchRecord);
-        //        }
-        //    }
-
-        //    if (matchRecord.SecondPreviousMach is not null)
-        //    {
-        //        secondPreviousMatch = matches.FirstOrDefault(m => m.MatchId == matchRecord.SecondPreviousMach);
-
-        //        if (secondPreviousMatch is null)
-        //        {
-        //            var secondPreviousMatchRecord = matchesInTournament.First(m => m.MatchId == matchRecord.SecondPreviousMach);
-
-        //            secondPreviousMatch = CreateMatch(secondPreviousMatchRecord);
-        //        }
-        //    }
-
-        //    var newMatch = new MatchModel()
-        //    {
-        //        MatchId = matchRecord.MatchId,
-        //        Date = matchRecord.Date,
-        //        FirstTeam = matchRecord.FirstTeam,
-        //        SecondTeam = matchRecord.SecondTeam,
-        //        Winner = matchRecord.Winner,
-
-        //        FirstPreviousMatch = firstPreviousMatch,
-        //        SecondPreviousMatch = secondPreviousMatch
-        //    };
-
-        //    matches.Add(newMatch);
-
-        //    return newMatch;
-        //}
-    }
-
-    public void DeleteMatchesForTournament(Guid tournamentId)
-    {
-        var matchesInDatabase = _database.GetMatchRecords();
-
-        var matchesInTournament = matchesInDatabase.Where(m => m.TournamentId == tournamentId);
-
-        foreach (var matchRecord in matchesInTournament)
-        {
-            _database.DeleteMatchRecord(matchRecord);
-        }
-    }
-
-    public MatchBasicModel GetMatchById(Guid matchId)
+    public MatchModel GetMatchById(Guid matchId)
     {
         var matchRecord = _database.GetMatchRecords().FirstOrDefault(m => m.Id == matchId);
 
         if (matchRecord is null)
         {
-            return new MatchBasicModel();
+            return new MatchModel();
         }
 
-        TeamModel? firstTeam = null;
-        TeamModel? secondTeam = null;
-        TeamModel? winner = null;
+        GetTeamsAndWinner(matchRecord, out var firstTeam, out var secondTeam, out var winner);
 
-        if (matchRecord.FirstTeam is not null)
-        {
-            var firstTeamRecord = _database.GetTeamRecords().FirstOrDefault(t => t.Id == matchRecord.FirstTeam);
+        var sets = _setService.GetSetsForMatch(matchRecord.Id);
 
-            if (firstTeamRecord is not null)
-            {
-                firstTeam = new TeamModel
-                {
-                    Id = firstTeamRecord.Id,
-                    Name = firstTeamRecord.Name,
-                };
-
-                if (firstTeamRecord.Id == matchRecord.Winner)
-                {
-                    winner = firstTeam;
-                }
-            }
-        }
-
-        if (matchRecord.SecondTeam is not null)
-        {
-            var secondTeamRecord = _database.GetTeamRecords().FirstOrDefault(t => t.Id == matchRecord.SecondTeam);
-
-            if (secondTeamRecord is not null)
-            {
-                secondTeam = new TeamModel
-                {
-                    Id = secondTeamRecord.Id,
-                    Name = secondTeamRecord.Name,
-                };
-
-                if (secondTeamRecord.Id == matchRecord.Winner)
-                {
-                    winner = secondTeam;
-                }
-            }
-        }
-
-        var sets = _database.GetSetRecords()
-            .Where(s => s.MatchId == matchRecord.Id)
-            .Select(s => new SetModel
-            {
-                Id = s.Id,
-                SetNumber = s.SetNumber,
-                FirstTeamScore = s.FirstTeamScore,
-                SecondTeamScore = s.SecondTeamScore
-            }).ToList();
-
-        sets.Sort((s1, s2) =>
-        {
-            if (s1.SetNumber < s2.SetNumber)
-            {
-                return -1;
-            }
-
-            if (s1.SetNumber > s2.SetNumber)
-            {
-                return 1;
-            }
-
-            return 0;
-        });
-
-        return new MatchBasicModel
+        return new MatchModel
         {
             TournamentId = matchRecord.TournamentId,
             MatchId = matchRecord.Id,
@@ -183,20 +47,20 @@ public class MatchService : IMatchService
             FirstTeam = firstTeam,
             SecondTeam = secondTeam,
             Winner = winner,
-            Sets = sets
+            Sets = sets.ToArray()
         };
     }
 
-    public void UpdateMatchDate(MatchBasicModel match)
+    public void UpdateMatchDate(Guid matchId, DateOnly newDate)
     {
-        var matchRecord = _database.GetMatchRecords().FirstOrDefault(m => m.Id == match.MatchId);
+        var matchRecord = _database.GetMatchRecords().FirstOrDefault(m => m.Id == matchId);
 
         if (matchRecord is null)
         {
             return;
         }
 
-        var updatedMatchRecord = matchRecord with { Date = match.Date };
+        var updatedMatchRecord = matchRecord with { Date = newDate };
 
         _database.UpdateMatchRecord(updatedMatchRecord);
     }
@@ -231,7 +95,7 @@ public class MatchService : IMatchService
             return;
         }
 
-        UpdateFirstParent(matchToUpdate, firstParent);
+        UpdateWinnerOfFirstParent(matchToUpdate, firstParent);
 
         var previousParent = firstParent;
 
@@ -244,13 +108,101 @@ public class MatchService : IMatchService
                 break;
             }
 
-            UpdateNextParent(previousParent, nextParent);
+            ClearWinnerOfNextParent(previousParent, nextParent);
 
             previousParent = nextParent;
         }
     }
 
-    private void UpdateFirstParent(MatchRecord child, MatchRecord firstParent)
+    public void DeleteMatchesByTournamentId(Guid tournamentId)
+    {
+        var matchRecords = _database.GetMatchRecords().Where(m => m.TournamentId == tournamentId);
+
+        foreach (var matchRecord in matchRecords)
+        {
+            _setService.DeleteSetsForMatch(matchRecord.Id);
+            _database.DeleteMatchRecord(matchRecord);
+        }
+    }
+
+    private Guid CreateMatchRecursive(IReadOnlyList<Guid> availableTeamsIds, Guid tournamentId, ICollection<Guid> newMatchesIds)
+    {
+        MatchRecord newMatchRecord;
+
+        if (availableTeamsIds.Count > 2)
+        {
+            var teamsAreEven = availableTeamsIds.Count % 2 == 0;
+            var halfCount = availableTeamsIds.Count / 2;
+
+            var firstHalfOfTeamIds = availableTeamsIds.Take(halfCount).ToArray();
+            var secondHalfOfTeamIds = availableTeamsIds.TakeLast(halfCount + (teamsAreEven ? 0 : 1))
+                .ToArray();
+
+            Guid? firstTeamId = null;
+            Guid? firstMatchId = null;
+
+            if (firstHalfOfTeamIds.Length == 1)
+            {
+                firstTeamId = firstHalfOfTeamIds[0];
+            }
+            else
+            {
+                firstMatchId = CreateMatchRecursive(firstHalfOfTeamIds, tournamentId, newMatchesIds);
+            }
+
+            var secondMatchId = CreateMatchRecursive(secondHalfOfTeamIds, tournamentId, newMatchesIds);
+
+            newMatchRecord = new MatchRecord(Guid.NewGuid(), tournamentId, null, firstMatchId, secondMatchId, firstTeamId, null, null);
+        }
+        else
+        {
+            var firstTeamId = availableTeamsIds[0];
+            Guid? secondTeamId = null;
+
+            if (availableTeamsIds.Count > 1)
+            {
+                secondTeamId = availableTeamsIds[1];
+            }
+
+            newMatchRecord = new MatchRecord(Guid.NewGuid(), tournamentId, null, null, null, firstTeamId, secondTeamId, null);
+        }
+
+        _database.UpdateMatchRecord(newMatchRecord);
+
+        var newMatchId = newMatchRecord.Id;
+
+        newMatchesIds.Add(newMatchId);
+
+        return newMatchId;
+    }
+
+    private void GetTeamsAndWinner(MatchRecord matchRecord, out TeamModel? firstTeam, out TeamModel? secondTeam,
+        out TeamModel? winner)
+    {
+        firstTeam = GetTeamModel(matchRecord.FirstTeam);
+        secondTeam = GetTeamModel(matchRecord.SecondTeam);
+
+        winner = null;
+        UpdateWinner(ref winner, firstTeam, matchRecord.Winner);
+        UpdateWinner(ref winner, secondTeam, matchRecord.Winner);
+
+        return;
+
+        TeamModel? GetTeamModel(Guid? teamId)
+        {
+            return teamId is not null ? _teamService.GetTeam(teamId.Value) : null;
+        }
+
+        void UpdateWinner(ref TeamModel? currentWinner, TeamModel? possibleWinner, Guid? winnerId)
+        {
+            if (possibleWinner is not null && possibleWinner.TeamId == winnerId)
+            {
+                currentWinner = possibleWinner;
+            }
+        }
+    }
+
+    private void UpdateWinnerOfFirstParent(MatchRecord child, MatchRecord firstParent)
     {
         var isFirstChild = firstParent.FirstPreviousMach == child.Id;
 
@@ -280,7 +232,7 @@ public class MatchService : IMatchService
         _database.UpdateMatchRecord(firstParent);
     }
 
-    private void UpdateNextParent(MatchRecord child, MatchRecord nextParent)
+    private void ClearWinnerOfNextParent(MatchRecord child, MatchRecord nextParent)
     {
         var isFirstChild = nextParent.FirstPreviousMach == child.Id;
 

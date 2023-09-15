@@ -4,11 +4,9 @@ namespace TournamentManagementLogic.Service.Interfaces;
 
 public interface ITournamentService
 {
-    public List<TournamentBasicModel> GetTournamentList();
+    public IEnumerable<TournamentModel> GetTournaments();
 
-    public Guid CreateTournament(CreateTournamentModel model);
-
-    public TournamentBasicModel GetTournamentBasicById(Guid id);
+    public Guid CreateTournament(string tournamentName, string? gameName, string? tournamentDescription, IEnumerable<string> teamsNames);
 
     public TournamentModel GetTournamentById(Guid id);
 

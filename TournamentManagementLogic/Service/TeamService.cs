@@ -30,10 +30,11 @@ public class TeamService : ITeamService
         var teamRecordsForTournament = teamRecordsInDatabase.Where(t => t.TournamentId == tournamentId);
 
         var teams = teamRecordsForTournament.Select(t =>
-        new TeamModel()
+        new TeamModel
         {
-            Id = t.Id,
-            Name = t.Name
+            TournamentId = t.TournamentId,
+            TeamId = t.Id,
+            TeamName = t.Name
         });
 
         return teams.ToList();
@@ -45,10 +46,11 @@ public class TeamService : ITeamService
 
         var teamRecord = teamRecordsInDatabase.First(t => t.Id == id);
 
-        return new TeamModel()
+        return new TeamModel
         {
-            Id = teamRecord.Id,
-            Name = teamRecord.Name
+            TournamentId = teamRecord.Id,
+            TeamId = teamRecord.Id,
+            TeamName = teamRecord.Name
         };
     }
 

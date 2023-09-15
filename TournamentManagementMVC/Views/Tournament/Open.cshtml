@@ -1,14 +1,12 @@
-﻿@using System.Diagnostics
-@using TournamentManagementLogic.Model
-@model TournamentManagementLogic.Model.TournamentModel
+﻿@model TournamentManagementMVC.Models.Tournament.Open.TournamentOpenModel
 
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = Model.TournamentName;
 }
 
 <div class="row pt-3 text-center bg-primary text-white bg-opacity-75">
     <div class="col-sm-12">
-        <h1>@Model.Name</h1>
+        <h1>@Model.TournamentName</h1>
     </div>
 </div>
 
@@ -21,166 +19,65 @@
     </div>
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.Description))
+@if (!string.IsNullOrWhiteSpace(Model.TournamentDescription))
 {
     <div class="row pt-3 text-center bg-primary text-white bg-opacity-75">
         <div class="col-sm-12">
-            <p>@Model.Description</p>
+            <p>@Model.TournamentDescription</p>
         </div>
     </div>
-}
-
-@{
-    var numOfRounds = 0;
-
-    var n = 1;
-    while (n <= Model.Matches.Count)
-    {
-        numOfRounds += 1;
-        n *= 2;
-    }
-
-    var firstRoundsNames = new[] { "Finals", "Semi Finals", "Quarter Finals" };
-    var roundsNames = new List<(string codeName, string displayName)>();
-
-    for (var i = 0; i < numOfRounds; i++)
-    {
-        string displayName;
-
-        if (i < firstRoundsNames.Length)
-        {
-            displayName = firstRoundsNames[i];
-        }
-        else
-        {
-            var roundNum = numOfRounds - i;
-            displayName = $"Round {roundNum}";
-        }
-
-        var codeName = displayName.Replace(' ', '-').ToLower();
-
-        roundsNames.Add((codeName, displayName));
-    }
 }
 
 <div class="row text-center mt-1 mb-2 pt-4 pb-4 bg-secondary bg-opacity-10 border-top">
     <nav>
         <div class="nav nav-pills justify-content-center" id="rounds-tab" role="tablist">
-            @for (var i = roundsNames.Count - 1; i >= 0; i--)
+            @foreach (var round in Model.Rounds)
             {
-                <button class="nav-link @(i == roundsNames.Count-1 ? "active" : "")" id="rounds-@roundsNames[i].codeName-tab"
-                        data-bs-toggle="pill" data-bs-target="#rounds-@roundsNames[i].codeName" type="button" role="tab"
-                        aria-controls="rounds-@roundsNames[i].codeName" aria-selected="true">
-                    @roundsNames[i].displayName
+                var roundName = ConvertRoundName(round.RoundName);
+
+                <button class="nav-link" id="rounds-@roundName-tab"
+                        data-bs-toggle="pill" data-bs-target="#rounds-@roundName" type="button" role="tab"
+                        aria-controls="rounds-@roundName" aria-selected="true">
+                    @roundName
                 </button>
             }
         </div>
     </nav>
 </div>
 <div class="tab-content" id="rounds-tabContent">
-    @{
-        var currentTabQueue = new Queue<MatchModel>();
-        var nextTabQueue = new Queue<MatchModel>();
+    @foreach (var round in Model.Rounds)
+    {
+        var roundName = ConvertRoundName(round.RoundName);
 
-        currentTabQueue.Enqueue(Model.FinalMatch);
+        <div id="rounds-@roundName" class="tab-pane fade" role="tabpanel" aria-labelledby="rounds-@roundName-tab" tabindex="0">
 
-        for (var i = 0; i < roundsNames.Count; i++)
-        {
-            <div class="tab-pane fade @(i == roundsNames.Count-1 ? "show active" : "")"
-                 id="rounds-@roundsNames[i].codeName" role="tabpanel" aria-labelledby="rounds-@roundsNames[i].codeName-tab" tabindex="0">
-
-                @{
-                    while (currentTabQueue.Count > 0)
-                    {
-                        var match = currentTabQueue.Dequeue();
-
-                        if (match.FirstPreviousMatch is not null)
-                        {
-                            nextTabQueue.Enqueue(match.FirstPreviousMatch);
-                        }
-
-                        if (match.SecondPreviousMatch is not null)
-                        {
-                            nextTabQueue.Enqueue(match.SecondPreviousMatch);
-                        }
-
-                        var additionalColumns = new List<(string firstTeamCol, string secondTeamCol)>();
-
-                        if (match.Winner is not null)
-                        {
-                            if (match.Winner == match.FirstTeam)
-                            {
-                                additionalColumns.Add(("🥇", ""));
-                            }
-                            else if (match.Winner == match.SecondTeam)
-                            {
-                                additionalColumns.Add(("", "🥇"));
-                            }
-                        }
-
-                        switch (match.Sets.Count)
-                        {
-                            case > 3:
-                                additionalColumns.Add((match.Sets[0].FirstTeamScore, match.Sets[0].SecondTeamScore));
-                                additionalColumns.Add(("...", "..."));
-                                additionalColumns.Add((match.Sets[^1].FirstTeamScore, match.Sets[^1].SecondTeamScore));
-                                break;
-                            case > 0:
-                                additionalColumns.AddRange(match.Sets.Select(matchSet => (matchSet.FirstTeamScore, matchSet.SecondTeamScore)));
-                                break;
-                        }
-
-                        @if (match.Date is not null)
-                        {
-                            <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark justify-content-center">@match.Date</div>
-                        }
-
-                        <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark">
-
-                            @if (match.FirstTeam is not null)
-                            {
-                                <div class="col-@(12 - additionalColumns.Count) text-start">@match.FirstTeam.Name</div>
-
-                                @foreach (var additionalColumn in additionalColumns)
-                                {
-                                    <div class="col-1 text-center border-start border-dark">@additionalColumn.firstTeamCol</div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="col-12 text-start">-</div>
-                            }
-
-                        </div>
-
-                        <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75">
-
-                            @if (match.SecondTeam is not null)
-                            {
-                                <div class="col-@(12 - additionalColumns.Count) text-start">@match.SecondTeam.Name</div>
-
-                                @foreach (var additionalColumn in additionalColumns)
-                                {
-                                    <div class="col-1 text-center border-start border-dark">@additionalColumn.secondTeamCol</div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="col-12 text-start">-</div>
-                            }
-                        </div>
-
-                        <div class="row mt-1 mb-3">
-                            <a asp-controller="Match" asp-action="Edit" asp-route-matchId="@match.Id" type="button" class="btn btn-secondary">Edit</a>
-                        </div>
-                    }
-
-                    currentTabQueue = nextTabQueue;
-                    nextTabQueue = new Queue<MatchModel>();
+            @foreach (var roundMatch in round.RoundMatches)
+            {
+                if (roundMatch.MatchDate is not null)
+                {
+                    <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark justify-content-center">@roundMatch.MatchDate</div>
                 }
 
-            </div>
-        }
+                foreach (var matchTeam in roundMatch.MatchTeams)
+                {
+                    <div class="row pt-2 pb-2 bg-info text-black bg-opacity-75 border-bottom border-dark">
+                        <div class="col-8 text-start">@matchTeam.TeamName</div>
+                        <div class="col-1 text-center">@(matchTeam.IsWinner ? "🥇" : "")</div>
+
+                        @foreach (var setScore in matchTeam.TeamSetsScores)
+                        {
+                            <div class="col-1 text-center">@setScore</div>
+                        }
+
+                    </div>
+                }
+
+                <div class="row mt-1 mb-3">
+                    <a asp-controller="Match" asp-action="Edit" asp-route-matchId="@roundMatch.MatchId" type="button" class="btn btn-secondary">Edit</a>
+                </div>
+            }
+
+        </div>
     }
 </div>
 
@@ -206,7 +103,7 @@
                 <span>Are you sure you want to remove this tournament?</span>
             </div>
             <div class="modal-footer">
-                <a class="btn btn-danger px-5 mx-5" asp-action="Delete" asp-route-tournamentId="@Model.Id">Yes</a>
+                <a class="btn btn-danger px-5 mx-5" asp-action="Delete" asp-route-tournamentId="@Model.TournamentId">Yes</a>
 
                 <button class="btn btn-primary px-5 mx-5" type="button" data-bs-dismiss="modal">No</button>
             </div>
@@ -221,4 +118,12 @@
         tooltipTriggerList = document.querySelectorAll('[data-bs-toggle-tooltip="tooltip"]');
         tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     </script>
+}
+
+@functions
+{
+    public string ConvertRoundName(string roundName)
+    {
+        return roundName.Replace(" ", "-");
+    }
 }

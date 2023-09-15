@@ -4,8 +4,9 @@ namespace TournamentManagementLogic.Model;
 
 public class TeamModel
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid TournamentId { get; init; } = Guid.Empty;
 
-    [Display(Name = "Name")]
-    public string Name { get; init; } = string.Empty;
+    public Guid TeamId { get; init; } = Guid.Empty;
+
+    public string TeamName { get; init; } = string.Empty;
 }

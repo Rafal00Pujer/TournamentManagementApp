@@ -4,15 +4,13 @@ namespace TournamentManagementLogic.Service.Interfaces;
 
 public interface IMatchService
 {
-    public Guid CreateMatch(Guid tournamentId, Guid? firstPreviousMatch, Guid? secondPreviousMatch, Guid? firstTeam, Guid? secondTeam);
+    public IEnumerable<Guid> CreateMatchesForTournament(Guid tournamentId, IEnumerable<Guid> teamsIds);
 
-    public List<MatchModel> GetMatchesForTournament(Guid tournamentId);
+    public MatchModel GetMatchById(Guid matchId);
 
-    public void DeleteMatchesForTournament(Guid tournamentId);
-
-    public MatchBasicModel GetMatchById(Guid matchId);
-
-    public void UpdateMatchDate(MatchBasicModel match);
+    public void UpdateMatchDate(Guid matchId, DateOnly newDate);
 
     public void UpdateMatchWinner(Guid matchId, Guid winnerId);
+
+    public void DeleteMatchesByTournamentId(Guid tournamentId);
 }

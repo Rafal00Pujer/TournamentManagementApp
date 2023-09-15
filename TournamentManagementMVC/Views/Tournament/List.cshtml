@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TournamentManagementLogic.Model.TournamentBasicModel>
+﻿@model IEnumerable<TournamentManagementMVC.Models.Tournament.TournamentListElementModel>
 
 @{
     ViewData["Title"] = "Tournaments";
@@ -14,13 +14,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.TournamentName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GameName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.TournamentDescription)
             </th>
             <th></th>
         </tr>
@@ -30,16 +30,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.TournamentName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.GameName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.DisplayFor(modelItem => item.TournamentDescription)
                 </td>
                 <td>
-                    <a asp-action="Open" asp-route-tournamentId="@item.Id">Open</a>
+                    <a asp-action="Open" asp-route-tournamentId="@item.TournamentId">Open</a>
                 </td>
             </tr>
         }

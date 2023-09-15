@@ -1,10 +1,9 @@
-﻿@model TournamentManagementLogic.Model.SetModel
+﻿@model TournamentManagementMVC.Models.Match.MatchEditSetModel
 
 
-<form class="row justify-content-center text-center my-2" asp-controller="Set" asp-action="Save" asp-route-matchId="@ViewData["MatchId"]">
+<form class="row justify-content-center text-center my-2" asp-controller="Set" asp-action="Save" asp-route-matchId="@Model.MatchId">
     <div class="text-danger col-12" asp-validation-summary="ModelOnly"></div>
-    <input asp-for="Id" hidden="true" />
-    <input asp-for="SetNumber" hidden="true" />
+    <input asp-for="SetId" hidden="true" />
 
 
     <div class="col-1">
@@ -23,11 +22,11 @@
         </svg>
     </button>
 
-    @if (Model.Id != Guid.Empty && Model.SetNumber > 0)
+    @if (Model.SetId != Guid.Empty)
     {
         @* Delete button *@
         <button type="button" class="btn btn-danger col-1"
-                data-bs-toggle="modal" data-bs-target="#deleteSetModal" data-bs-link-id="link@(Model.SetNumber)"
+                data-bs-toggle="modal" data-bs-target="#deleteSetModal" data-bs-link-id="link@(Model.SetId)"
                 data-bs-toggle-tooltip="tooltip" data-bs-trigger="hover" data-bs-title="Delete set">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
@@ -36,6 +35,6 @@
         </button>
 
         @* hidden link for modal *@
-        <a id="link@(Model.SetNumber)" hidden asp-controller="Set" asp-action="Delete" asp-route-setId="@Model.Id" asp-route-matchId="@ViewData["MatchId"]"></a>
+        <a id="link@(Model.SetId)" hidden asp-controller="Set" asp-action="Delete" asp-route-setId="@Model.SetId" asp-route-matchId="@Model.MatchId"></a>
     }
 </form>
