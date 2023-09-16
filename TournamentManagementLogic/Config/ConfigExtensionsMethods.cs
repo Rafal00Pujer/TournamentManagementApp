@@ -7,7 +7,7 @@ namespace TournamentManagementLogic.Config;
 
 public static class ConfigExtensionsMethods
 {
-    public static IServiceCollection AddLogicServices(this IServiceCollection services)
+    public static IServiceCollection AddTournamentLogicServices(this IServiceCollection services)
     {
         services.AddScoped<IDatabase, JsonDatabase>();
         services.AddScoped<ITournamentService, TournamentService>();

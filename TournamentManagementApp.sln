@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentManagementMVC", "TournamentManagementMVC\TournamentManagementMVC.csproj", "{2E48E022-FD3D-445D-83AF-35464836C695}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentManagementMVC", "TournamentManagementMVC\TournamentManagementMVC.csproj", "{2E48E022-FD3D-445D-83AF-35464836C695}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentManagementLogic", "TournamentManagementLogic\TournamentManagementLogic.csproj", "{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentManagementLogic", "TournamentManagementLogic\TournamentManagementLogic.csproj", "{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentManagementBlazor", "TournamentManagementBlazor\TournamentManagementBlazor.csproj", "{4A52CE53-4C6A-468C-824A-D7E60F0A6063}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5} = {C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A52CE53-4C6A-468C-824A-D7E60F0A6063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A52CE53-4C6A-468C-824A-D7E60F0A6063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A52CE53-4C6A-468C-824A-D7E60F0A6063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A52CE53-4C6A-468C-824A-D7E60F0A6063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
