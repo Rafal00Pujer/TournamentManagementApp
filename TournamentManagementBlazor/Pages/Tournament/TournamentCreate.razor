@@ -1,0 +1,111 @@
+﻿@page "/Tournament/Create"
+@using TournamentManagementBlazor.Model.Tournament
+
+<div class="container-fluid">
+    <div class="row justify-content-end">
+        <Alert AlertText="The tournament was successfully created." Type="Alert.AlertType.Success" EnableCloseBtn="true" @ref="_tournamentCreated" />
+        <button class="col-1 btn btn-primary mb-3" type="button" @onclick="ToggleCreateTournamentVisibility">
+            Create tournament
+        </button>
+    </div>
+
+    <EditForm class="@string.Concat(CollapseClass, " row justify-content-start")" Model="@_newTournament" OnValidSubmit="@CreateTournament">
+        <ObjectGraphDataAnnotationsValidator />
+        @* <ValidationSummary /> *@
+
+        <div class="col-4">
+            <div class="form-floating">
+                <InputText class="form-control" placeholder="" @bind-Value="_newTournament.TournamentName"></InputText>
+                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentName)"></DisplayLabel>
+            </div>
+            <ValidationMessage For="() => _newTournament.TournamentName" />
+        </div>
+
+        <div class="col-4">
+            <div class="form-floating">
+                <InputText class="form-control" placeholder="" @bind-Value="_newTournament.GameName"></InputText>
+                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.GameName)"></DisplayLabel>
+            </div>
+            <ValidationMessage For="() => _newTournament.GameName" />
+        </div>
+
+        <div class="col-4">
+            <div class="form-floating">
+                <InputTextArea class="form-control" placeholder="" @bind-Value="_newTournament.TournamentDescription"></InputTextArea>
+                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentDescription)"></DisplayLabel>
+            </div>
+            <ValidationMessage For="() => _newTournament.TournamentDescription" />
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="row justify-content-start">
+                @for (var i = 0; i < _newTournament.Teams.Count; i++)
+                {
+                    var teamIndex = i;
+                    var team = _newTournament.Teams[teamIndex];
+
+                    <div class="col-4 mt-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@(teamIndex + 1)</span>
+
+                            <div class="form-floating flex-fill">
+                                <InputText class="form-control" placeholder="" @bind-Value="team.Name"></InputText>
+                                <DisplayLabel TClass="TournamentCreateTeamModel" PropertyName="@nameof(team.Name)"></DisplayLabel>
+                            </div>
+
+                            <button class="btn btn-danger" @onclick="() => RemoveTeam(teamIndex)" type="button">X</button>
+                        </div>
+                        <ValidationMessage For="() => team.Name" />
+                    </div>
+                }
+            </div>
+            <ValidationMessage For="() => _newTournament.Teams" />
+        </div>
+
+        <div class="col-12 row justify-content-center">
+            <button class="btn btn-primary col-1" type="submit">Create</button>
+            <button class="btn btn-secondary col-1 mx-2" @onclick="AddTeam" type="button">Add Team</button>
+            <button class="btn btn-secondary col-1" @onclick="ShuffleTeams" type="button">Shuffle Teams</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public Action<TournamentCreateModel>? OnTournamentCreated { get; set; }
+
+    private Alert _tournamentCreated;
+    private bool _showCreateTournament;
+    private TournamentCreateModel _newTournament = new();
+
+    private string CollapseClass => _showCreateTournament ? "collapse.show" : "collapse";
+
+    private void ToggleCreateTournamentVisibility() => _showCreateTournament = !_showCreateTournament;
+
+    private void CreateTournament()
+    {
+        OnTournamentCreated?.Invoke(_newTournament);
+
+        _newTournament = new TournamentCreateModel();
+        _showCreateTournament = false;
+        _tournamentCreated.ShowAlert = true;
+    }
+
+    private void AddTeam() => _newTournament.Teams.Add(new TournamentCreateTeamModel());
+
+    private void RemoveTeam(int teamIndex) => _newTournament.Teams.RemoveAt(teamIndex);
+
+    private void ShuffleTeams()
+    {
+        var teams = _newTournament.Teams;
+        var n = teams.Count;
+
+        while (n > 1)
+        {
+            var k = Random.Shared.Next(0, n);
+            n--;
+
+            (teams[k], teams[n]) = (teams[n], teams[k]);
+        }
+    }
+}

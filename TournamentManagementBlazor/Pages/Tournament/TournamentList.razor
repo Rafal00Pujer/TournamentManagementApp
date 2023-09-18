@@ -1,0 +1,61 @@
+﻿@page "/Tournament/List"
+@using TournamentManagementLogic.Model
+@using TournamentManagementLogic.Service.Interfaces
+@using TournamentManagementBlazor.Model.Tournament
+@inject ITournamentService TournamentService
+
+<PageTitle>Tournaments</PageTitle>
+
+<div class="container-fluid">
+    <div class="row-cols-1 justify-content-start">
+        <h3>Tournaments</h3>
+    </div>
+
+    <TournamentCreate OnTournamentCreated="@OnTournamentCreated" />
+
+    @if (_tournaments == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tournament Name</th>
+                    <th>Game Name</th>
+                    <th>Tournament Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tournament in _tournaments)
+                {
+                    <tr>
+                        <td>@tournament.TournamentName</td>
+                        <td>@tournament.GameName</td>
+                        <td>@tournament.TournamentDescription</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private IEnumerable<TournamentModel>? _tournaments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tournaments = TournamentService.GetTournaments();
+        await Task.CompletedTask;
+    }
+
+    private void OnTournamentCreated(TournamentCreateModel newTournament)
+    {
+        var teamsNames = newTournament.Teams.Select(t => t.Name);
+        TournamentService.CreateTournament(newTournament.TournamentName, newTournament.GameName, newTournament.TournamentDescription, teamsNames);
+        _tournaments = TournamentService.GetTournaments();
+
+        StateHasChanged();
+    }
+}

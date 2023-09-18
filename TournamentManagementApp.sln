@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentManagementMVC", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentManagementLogic", "TournamentManagementLogic\TournamentManagementLogic.csproj", "{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentManagementBlazor", "TournamentManagementBlazor\TournamentManagementBlazor.csproj", "{4A52CE53-4C6A-468C-824A-D7E60F0A6063}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TournamentManagementBlazor", "TournamentManagementBlazor\TournamentManagementBlazor.csproj", "{4A52CE53-4C6A-468C-824A-D7E60F0A6063}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C15EBDCF-4AF4-44DE-B947-3853AE6C04F5} = {C15EBDCF-4AF4-44DE-B947-3853AE6C04F5}
 	EndProjectSection

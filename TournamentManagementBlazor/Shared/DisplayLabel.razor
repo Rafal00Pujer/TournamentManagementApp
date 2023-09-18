@@ -1,0 +1,36 @@
+﻿@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+
+@typeparam TClass
+
+<label id="@Id" class="@Class">@GetDisplayName()</label>
+
+@code {
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string PropertyName { get; set; } = string.Empty;
+
+    private string GetDisplayName()
+    {
+        var name = string.Empty;
+        var property = typeof(TClass).GetProperty(PropertyName);
+
+        if (property is not null)
+        {
+            name = property.Name;
+
+            if (property.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute { Name: not null } display)
+            {
+                name = display.Name;
+            }
+        }
+
+        return name;
+    }
+}

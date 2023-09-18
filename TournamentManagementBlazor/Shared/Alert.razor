@@ -1,0 +1,57 @@
+﻿
+<div class="@string.Concat(CollapseClass, " col-12 alert ", GetTypeClass())">
+    <span>@AlertText</span>
+
+    @if (EnableCloseBtn)
+    {
+        <button type="button" class="btn-close" aria-label="Close" @onclick="()=>ShowAlert = false"></button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string AlertText { get; set; } = string.Empty;
+
+    [Parameter]
+    public AlertType Type { get; set; }
+
+    [Parameter]
+    public bool EnableCloseBtn { get; set; }
+
+    public bool ShowAlert
+    {
+        get => _showAlert;
+        set
+        {
+            if (value == _showAlert)
+            {
+                return;
+            }
+
+            _showAlert = value;
+            StateHasChanged();
+        }
+    }
+
+    private bool _showAlert;
+    private string CollapseClass => ShowAlert ? "collapse.show" : "collapse";
+
+    private string GetTypeClass()
+    {
+        var type = Enum.GetName(Type);
+
+        return type is null ? string.Empty : string.Concat("alert-", type.ToLower());
+    }
+
+    public enum AlertType
+    {
+        Primary,
+        Secondary,
+        Success,
+        Danger,
+        Warning,
+        Info,
+        Light,
+        Dark
+    }
+}
