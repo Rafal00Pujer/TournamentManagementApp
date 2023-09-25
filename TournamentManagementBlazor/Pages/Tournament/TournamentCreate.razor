@@ -1,73 +1,76 @@
-﻿@page "/Tournament/Create"
-@using TournamentManagementBlazor.Model.Tournament
+﻿@using TournamentManagementBlazor.Model.Tournament
 
 <div class="container-fluid">
     <div class="row justify-content-end">
         <Alert AlertText="The tournament was successfully created." Type="Alert.AlertType.Success" EnableCloseBtn="true" @ref="_tournamentCreated" />
-        <button class="col-1 btn btn-primary mb-3" type="button" @onclick="ToggleCreateTournamentVisibility">
+        <button class="col-12 col-lg-4 col-xxl-2 btn btn-primary mb-3" type="button" @onclick="ToggleCreateTournamentVisibility">
             Create tournament
         </button>
     </div>
 
-    <EditForm class="@string.Concat(CollapseClass, " row justify-content-start")" Model="@_newTournament" OnValidSubmit="@CreateTournament">
-        <ObjectGraphDataAnnotationsValidator />
-        @* <ValidationSummary /> *@
+    <div class="col-12">
+        <EditForm class="@string.Concat(CollapseClass, " row justify-content-start")" Model="@_newTournament" OnValidSubmit="@CreateTournament">
+            <ObjectGraphDataAnnotationsValidator />
+            @* <ValidationSummary /> *@
 
-        <div class="col-4">
-            <div class="form-floating">
-                <InputText class="form-control" placeholder="" @bind-Value="_newTournament.TournamentName"></InputText>
-                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentName)"></DisplayLabel>
+            <div class="col-12 col-lg-6 col-xxl-4">
+                <div class="form-floating">
+                    <InputText class="form-control mb-1" placeholder="" @bind-Value="_newTournament.TournamentName"></InputText>
+                    <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentName)"></DisplayLabel>
+                </div>
+                <ValidationMessage For="() => _newTournament.TournamentName" />
             </div>
-            <ValidationMessage For="() => _newTournament.TournamentName" />
-        </div>
 
-        <div class="col-4">
-            <div class="form-floating">
-                <InputText class="form-control" placeholder="" @bind-Value="_newTournament.GameName"></InputText>
-                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.GameName)"></DisplayLabel>
+            <div class="col-12 col-lg-6 col-xxl-4">
+                <div class="form-floating">
+                    <InputText class="form-control mb-1" placeholder="" @bind-Value="_newTournament.GameName"></InputText>
+                    <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.GameName)"></DisplayLabel>
+                </div>
+                <ValidationMessage For="() => _newTournament.GameName" />
             </div>
-            <ValidationMessage For="() => _newTournament.GameName" />
-        </div>
 
-        <div class="col-4">
-            <div class="form-floating">
-                <InputTextArea class="form-control" placeholder="" @bind-Value="_newTournament.TournamentDescription"></InputTextArea>
-                <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentDescription)"></DisplayLabel>
+            <div class="col-12 col-xxl-4">
+                <div class="form-floating">
+                    <InputTextArea class="form-control mb-1" placeholder="" @bind-Value="_newTournament.TournamentDescription"></InputTextArea>
+                    <DisplayLabel TClass="TournamentCreateModel" PropertyName="@nameof(_newTournament.TournamentDescription)"></DisplayLabel>
+                </div>
+                <ValidationMessage For="() => _newTournament.TournamentDescription" />
             </div>
-            <ValidationMessage For="() => _newTournament.TournamentDescription" />
-        </div>
 
-        <div class="col-12 mb-2">
-            <div class="row justify-content-start">
-                @for (var i = 0; i < _newTournament.Teams.Count; i++)
-                {
-                    var teamIndex = i;
-                    var team = _newTournament.Teams[teamIndex];
+            <div class="col-12 mb-2">
+                <div class="row justify-content-start">
+                    @for (var i = 0; i < _newTournament.Teams.Count; i++)
+                    {
+                        var teamIndex = i;
+                        var team = _newTournament.Teams[teamIndex];
 
-                    <div class="col-4 mt-2">
-                        <div class="input-group">
-                            <span class="input-group-text">@(teamIndex + 1)</span>
+                        <div class="col-12 col-lg-6 col-xxl-4 mt-2">
+                            <div class="input-group">
+                                <span class="input-group-text">@(teamIndex + 1)</span>
 
-                            <div class="form-floating flex-fill">
-                                <InputText class="form-control" placeholder="" @bind-Value="team.Name"></InputText>
-                                <DisplayLabel TClass="TournamentCreateTeamModel" PropertyName="@nameof(team.Name)"></DisplayLabel>
+                                <div class="form-floating flex-fill">
+                                    <InputText class="form-control" placeholder="" @bind-Value="team.Name"></InputText>
+                                    <DisplayLabel TClass="TournamentCreateTeamModel" PropertyName="@nameof(team.Name)"></DisplayLabel>
+                                </div>
+
+                                <button class="btn btn-danger" @onclick="() => RemoveTeam(teamIndex)" type="button">X</button>
                             </div>
-
-                            <button class="btn btn-danger" @onclick="() => RemoveTeam(teamIndex)" type="button">X</button>
+                            <ValidationMessage For="() => team.Name" />
                         </div>
-                        <ValidationMessage For="() => team.Name" />
-                    </div>
-                }
+                    }
+                </div>
+                <ValidationMessage For="() => _newTournament.Teams" />
             </div>
-            <ValidationMessage For="() => _newTournament.Teams" />
-        </div>
 
-        <div class="col-12 row justify-content-center">
-            <button class="btn btn-primary col-1" type="submit">Create</button>
-            <button class="btn btn-secondary col-1 mx-2" @onclick="AddTeam" type="button">Add Team</button>
-            <button class="btn btn-secondary col-1" @onclick="ShuffleTeams" type="button">Shuffle Teams</button>
-        </div>
-    </EditForm>
+            <div class="col-12">
+                <div class="row justify-content-center">
+                    <button class="btn btn-primary col-12 col-lg-3 col-xxl-2 mb-1" type="submit">Create</button>
+                    <button class="btn btn-secondary col-12 col-lg-3 col-xxl-2 mx-2 mb-1" @onclick="AddTeam" type="button">Add Team</button>
+                    <button class="btn btn-secondary col-12 col-lg-3 col-xxl-2 mb-1" @onclick="ShuffleTeams" type="button">Shuffle Teams</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
 </div>
 
 @code {

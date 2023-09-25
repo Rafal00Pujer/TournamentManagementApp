@@ -7,37 +7,26 @@
 <PageTitle>Tournaments</PageTitle>
 
 <div class="container-fluid">
-    <div class="row-cols-1 justify-content-start">
-        <h3>Tournaments</h3>
+    <div class="row row-cols-1 justify-content-start">
+        <h3 class="col text-center">Tournaments</h3>
     </div>
 
     <TournamentCreate OnTournamentCreated="@OnTournamentCreated" />
 
     @if (_tournaments == null)
     {
-        <p><em>Loading...</em></p>
+        <div class="row row-cols-1 justify-content-center"></div>
+        <p class="col text-center"><em>Loading...</em></p>
     }
     else
     {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tournament Name</th>
-                    <th>Game Name</th>
-                    <th>Tournament Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var tournament in _tournaments)
-                {
-                    <tr>
-                        <td>@tournament.TournamentName</td>
-                        <td>@tournament.GameName</td>
-                        <td>@tournament.TournamentDescription</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="row justify-content-center mt-3">
+
+            @foreach (var tournament in _tournaments)
+            {
+                <TournamentCard Tournament="@tournament"/>
+            }
+        </div>
     }
 </div>
 

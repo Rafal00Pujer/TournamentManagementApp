@@ -1,0 +1,27 @@
+﻿@using TournamentManagementLogic.Model;
+
+<div class="col-12 col-md-6 col-xl-4 col-xxl-2 mb-2">
+    <div class="card h-100 text-center text-wrap text-break">
+
+        <h5 class="card-header">@Tournament.TournamentName</h5>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2">@GameName</h6>
+
+            @if (!string.IsNullOrWhiteSpace(Tournament.TournamentDescription))
+            {
+                <p class="card-text mb-2">@Tournament.TournamentDescription</p>
+            }
+
+        </div>
+        <div class="card-footer">
+            <a href="#" class="btn btn-primary">Open</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TournamentModel Tournament { get; set; }
+
+    private string GameName => !string.IsNullOrWhiteSpace(Tournament.GameName) ? Tournament.GameName : "Undefined game";
+}
