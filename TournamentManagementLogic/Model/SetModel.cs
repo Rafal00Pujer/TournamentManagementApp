@@ -4,11 +4,11 @@ namespace TournamentManagementLogic.Model;
 
 public class SetModel
 {
-    public Guid MatchId { get; set; } = Guid.Empty;
+    public Guid MatchId { get; init; } = Guid.Empty;
 
     public Guid SetId { get; init; } = Guid.Empty;
 
-    public string FirstTeamScore { get; set; } = "0";
+    public string FirstTeamScore { get; init; } = "0";
 
-    public string SecondTeamScore { get; set; } = "0";
+    public string SecondTeamScore { get; init; } = "0";
 }

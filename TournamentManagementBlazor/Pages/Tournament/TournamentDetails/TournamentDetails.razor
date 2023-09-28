@@ -1,0 +1,155 @@
+﻿@page "/Tournament/Details/{Id:guid}"
+
+@using TournamentManagementLogic.Model
+@using TournamentManagementLogic.Service.Interfaces
+@using TournamentManagementBlazor.Model.Tournament
+
+@inject ITournamentService TournamentService
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid">
+
+    @if (_tournament is null)
+    {
+        <div class="row row-cols-1 justify-content-start">
+            <p class="col"><em>Loading tournament...</em></p>
+        </div>
+    }
+    else
+    {
+        <PageTitle>@_tournament.TournamentName</PageTitle>
+
+        <div class="row row-cols-1 justify-content-center">
+            <div class="col text-center text-wrap text-break">
+                <h1>@_tournament.TournamentName</h1>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 justify-content-center">
+            <div class="col text-center text-wrap text-break">
+                <h2>@_tournament.ConvertGameName()</h2>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_tournament.TournamentDescription))
+        {
+            <div class="row row-cols-1 justify-content-center">
+                <div class="col text-center text-wrap text-break">
+                    <p>@_tournament.TournamentDescription</p>
+                </div>
+            </div>
+        }
+
+        <nav class="nav row justify-content-center">
+            @foreach (var round in _rounds)
+            {
+                var isSelected = _selectedRound == round;
+
+                <button class="@GetRoundBtnClass(isSelected) col-12 col-md-5 col-xl-2 col-xxl-1 mx-1 my-1"
+                @onclick="() => { _selectedRound = round; _selectedMatch = null; }">
+                    @round.RoundName
+                </button>
+            }
+        </nav>
+
+        @if (_selectedRound is not null)
+        {
+            <div class="row justify-content-center">
+                @foreach (var match in _selectedRound.Matches)
+                {
+                    if (match == _selectedMatch)
+                    {
+                        <TournamentMatchEdit Match="@match" OnMatchWinnerChanged="@OnMatchWinnerChanged" />
+
+                        continue;
+                    }
+
+                    <div class="col-12 col-md-6 col-xl-4 col-xxl-3 my-1">
+                        <div class="card h-100 text-center text-wrap text-break">
+                            <h5 class="card-header">@match.FirstTeam.ConvertTeamName()<br />vs<br />@match.SecondTeam.ConvertTeamName()</h5>
+                            <div class="card-body">
+                                <h6 class="card-subtitle">@match.ConvertDate()<br />@match.Winner.ConvertWinnerName()</h6>
+                                @foreach (var set in match.Sets)
+                                {
+                                    <p class="card-text">@set.FirstTeamScore : @set.SecondTeamScore</p>
+                                }
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-primary" @onclick="()=>_selectedMatch = match">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="row my-3 justify-content-start">
+            <button class="col-12 col-md-5 col-xl-2 btn btn-danger" @onclick="()=>_showDeleteConfirm = !_showDeleteConfirm">Delete tournament</button>
+        </div>
+
+        <div class="@ConfirmDeleteClass row my-5 justify-content-start">
+            <button class="col-12 col-md-5 col-xl-2 btn btn-danger" @onclick="DeleteTournament">Confirm deletion of the tournament.</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private TournamentModel? _tournament;
+    private TournamentRoundModel? _selectedRound;
+    private TournamentMatchModel? _selectedMatch;
+    private readonly List<TournamentRoundModel> _rounds = new();
+
+    private bool _showDeleteConfirm;
+    private string ConfirmDeleteClass => _showDeleteConfirm ? "show" : "collapse";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tournament = TournamentService.GetTournamentById(Id);
+
+        if (tournament.TournamentId == Guid.Empty)
+        {
+            NavigationManager.NavigateTo("/Tournament/List");
+            return;
+        }
+
+        _tournament = tournament;
+        _rounds.AddRange(_tournament.ConvertRounds());
+        _selectedRound = _rounds.FirstOrDefault();
+
+        await Task.CompletedTask;
+    }
+
+    private void OnMatchWinnerChanged()
+    {
+        var updatedTournament = TournamentService.GetTournamentById(_tournament!.TournamentId);
+        _tournament = updatedTournament;
+
+        _rounds.Clear();
+        _rounds.AddRange(_tournament.ConvertRounds());
+
+        var updatedSelectedRound = _rounds.First(r => r.RoundName == _selectedRound!.RoundName);
+        _selectedRound = updatedSelectedRound;
+
+        var updatedSelectedMatch = _selectedRound.Matches.First(m => m.MatchId == _selectedMatch!.MatchId);
+        _selectedMatch = updatedSelectedMatch;
+
+
+    }
+
+    private void DeleteTournament()
+    {
+        TournamentService.DeleteTournament(_tournament!.TournamentId);
+
+        NavigationManager.NavigateTo("/Tournament/List");
+    }
+
+    private static string GetRoundBtnClass(bool selected)
+    {
+        const string commonClass = "btn ";
+
+        return string.Concat(commonClass, selected ? "btn-primary" : "btn-outline-primary");
+    }
+}

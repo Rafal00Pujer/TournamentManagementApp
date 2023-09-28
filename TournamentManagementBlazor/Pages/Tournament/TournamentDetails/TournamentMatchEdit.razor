@@ -1,0 +1,148 @@
+﻿@using TournamentManagementLogic.Service.Interfaces
+@using TournamentManagementLogic.Model
+@using TournamentManagementBlazor.Model.Tournament
+@using Microsoft.AspNetCore.Components.Rendering
+@using System.Diagnostics.CodeAnalysis
+
+@inject IMatchService MatchService
+@inject ISetService SetService
+
+<div class="col-12 my-1 py-2 bg-primary bg-opacity-10 border border-2 border-primary">
+    <div class="row justify-content-center text-center text-wrap text-break">
+        <h4 class="col-12 col-md-5 col-xl-2">@Match.FirstTeam.ConvertTeamName()</h4>
+
+        @if (CanSetWinner)
+        {
+            if (Match.FirstTeam == Match.Winner)
+            {
+                <h5 class="col-12 col-md-5 col-xl-2">Is winner</h5>
+            }
+            else
+            {
+                <button class="col-12 col-md-5 col-xl-2 btn btn-primary" @onclick="() => UpdateMatchWinner(Match.FirstTeam!)">Set as winner</button>
+            }
+        }
+
+        <h4 class="col-12 my-1">VS</h4>
+        <h4 class="col-12 col-md-5 col-xl-2">@Match.SecondTeam.ConvertTeamName()</h4>
+
+        @if (CanSetWinner)
+        {
+            if (Match.SecondTeam == Match.Winner)
+            {
+                <h5 class="col-12 col-md-5 col-xl-2">Is winner</h5>
+            }
+            else
+            {
+                <button class="col-12 col-md-5 col-xl-2 btn btn-primary" @onclick="() => UpdateMatchWinner(Match.SecondTeam!)">Set as winner</button>
+            }
+        }
+
+        <div class="col-12 my-2">
+            <DisplayLabel TClass="TournamentMatchModel" PropertyName="@nameof(Match.Date)" />
+            <InputDate TValue="DateOnly?" Value="Match.Date" ValueExpression="() => Match.Date" ValueChanged="UpdateMatchDate" />
+        </div>
+
+        <DisplayLabel Class="col-12" TClass="TournamentMatchModel" PropertyName="@nameof(Match.Sets)" />
+
+        <div class="col-12">
+            <div class="row justify-content-start">
+                @for (var i = 0; i < Match.Sets.Count; i++)
+                {
+                    var setIndex = i;
+                    var set = Match.Sets[setIndex];
+
+                    <div class="col-12 my-2">
+                        <EditForm Model="@set" OnValidSubmit="()=>SetService.UpdateScores(set.SetId, set.FirstTeamScore, set.SecondTeamScore)">
+                            <ObjectGraphDataAnnotationsValidator />
+                            @* <ValidationSummary /> *@
+
+                            <div class="input-group">
+                                <span class="input-group-text">@(setIndex + 1)</span>
+
+                                <div class="form-floating flex-fill">
+                                    <InputText class="form-control" placeholder="" @bind-Value="@set.FirstTeamScore" />
+                                    <DisplayLabel TClass="TournamentSetModel" PropertyName="@nameof(set.FirstTeamScore)" />
+                                </div>
+
+                                <div class="form-floating flex-fill">
+                                    <InputText class="form-control" placeholder="" @bind-Value="@set.SecondTeamScore" />
+                                    <DisplayLabel TClass="TournamentSetModel" PropertyName="@nameof(set.SecondTeamScore)" />
+                                </div>
+
+                                <button class="btn btn-primary" type="submit">Save</button>
+                                <button class="btn btn-danger ms-1" type="button" @onclick="() => DeleteSet(set)">X</button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <ValidationMessage For="() => set.FirstTeamScore" />
+                                </div>
+                                <div class="col-6">
+                                    <ValidationMessage For="() => set.SecondTeamScore" />
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <button class="col-12 col-md-5 col-xl-2 btn btn-primary" type="button" @onclick="CreateEmptySet">Add new set</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TournamentMatchModel Match { get; set; }
+
+    [Parameter]
+    public EventCallback OnMatchWinnerChanged { get; set; }
+
+    private bool CanSetWinner => Match.FirstTeam is not null && Match.SecondTeam is not null;
+
+    private void UpdateMatchWinner(TeamModel newWinner)
+    {
+        MatchService.UpdateMatchWinner(Match.MatchId, newWinner.TeamId);
+        Match.Winner = newWinner;
+
+        OnMatchWinnerChanged.InvokeAsync();
+    }
+
+    private void UpdateMatchDate(DateOnly? newDate)
+    {
+        if (!newDate.HasValue)
+        {
+            return;
+        }
+
+        var date = newDate.Value;
+
+        MatchService.UpdateMatchDate(Match!.MatchId, date);
+        Match.Date = date;
+    }
+
+    private void CreateEmptySet()
+    {
+        const string defaultScore = "0";
+
+        var newSetId = SetService.CreateEmptySet(Match.MatchId);
+        SetService.UpdateScores(newSetId, defaultScore, defaultScore);
+
+        var newSet = new TournamentSetModel
+            {
+                SetId = newSetId,
+                FirstTeamScore = defaultScore,
+                SecondTeamScore = defaultScore
+            };
+
+        Match.Sets.Add(newSet);
+    }
+
+    private void DeleteSet(TournamentSetModel setToDelete)
+    {
+        SetService.DeleteSet(setToDelete.SetId);
+
+        Match.Sets.Remove(setToDelete);
+    }
+}

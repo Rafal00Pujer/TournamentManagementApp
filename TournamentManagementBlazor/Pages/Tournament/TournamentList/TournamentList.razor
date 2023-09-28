@@ -1,7 +1,8 @@
 ﻿@page "/Tournament/List"
+
 @using TournamentManagementLogic.Model
 @using TournamentManagementLogic.Service.Interfaces
-@using TournamentManagementBlazor.Model.Tournament
+
 @inject ITournamentService TournamentService
 
 <PageTitle>Tournaments</PageTitle>
@@ -15,8 +16,9 @@
 
     @if (_tournaments == null)
     {
-        <div class="row row-cols-1 justify-content-center"></div>
-        <p class="col text-center"><em>Loading...</em></p>
+        <div class="row row-cols-1 justify-content-start">
+            <p class="col"><em>Loading tournaments...</em></p>
+        </div>
     }
     else
     {
@@ -24,7 +26,7 @@
 
             @foreach (var tournament in _tournaments)
             {
-                <TournamentCard Tournament="@tournament"/>
+                <TournamentCard Tournament="@tournament" />
             }
         </div>
     }
@@ -39,10 +41,8 @@
         await Task.CompletedTask;
     }
 
-    private void OnTournamentCreated(TournamentCreateModel newTournament)
+    private void OnTournamentCreated()
     {
-        var teamsNames = newTournament.Teams.Select(t => t.Name);
-        TournamentService.CreateTournament(newTournament.TournamentName, newTournament.GameName, newTournament.TournamentDescription, teamsNames);
         _tournaments = TournamentService.GetTournaments();
 
         StateHasChanged();

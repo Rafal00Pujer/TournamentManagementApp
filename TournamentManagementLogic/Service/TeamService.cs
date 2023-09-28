@@ -48,7 +48,7 @@ public class TeamService : ITeamService
 
         return new TeamModel
         {
-            TournamentId = teamRecord.Id,
+            TournamentId = teamRecord.TournamentId,
             TeamId = teamRecord.Id,
             TeamName = teamRecord.Name
         };

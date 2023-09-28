@@ -1,4 +1,7 @@
 ﻿@using TournamentManagementBlazor.Model.Tournament
+@using TournamentManagementLogic.Service.Interfaces
+
+@inject ITournamentService TournamentService
 
 <div class="container-fluid">
     <div class="row justify-content-end">
@@ -75,7 +78,7 @@
 
 @code {
     [Parameter]
-    public Action<TournamentCreateModel>? OnTournamentCreated { get; set; }
+    public EventCallback OnTournamentCreated { get; set; }
 
     private Alert _tournamentCreated;
     private bool _showCreateTournament;
@@ -87,7 +90,10 @@
 
     private void CreateTournament()
     {
-        OnTournamentCreated?.Invoke(_newTournament);
+        var teamsNames = _newTournament.Teams.Select(t => t.Name);
+        TournamentService.CreateTournament(_newTournament.TournamentName, _newTournament.GameName, _newTournament.TournamentDescription, teamsNames);
+
+        OnTournamentCreated.InvokeAsync();
 
         _newTournament = new TournamentCreateModel();
         _showCreateTournament = false;

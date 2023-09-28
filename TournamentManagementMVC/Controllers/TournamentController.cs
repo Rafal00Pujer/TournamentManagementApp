@@ -94,7 +94,7 @@ namespace TournamentManagementMVC.Controllers
             {
                 var roundModel = new TournamentOpenRoundModel
                 {
-                    RoundName = GetRoundName(),
+                    RoundName = GetNextRoundName(),
                     RoundMatches = ConvertRoundMatchesModels(round)
                 };
 
@@ -107,7 +107,7 @@ namespace TournamentManagementMVC.Controllers
 
             return roundsModels;
 
-            string GetRoundName()
+            string GetNextRoundName()
             {
                 string name;
 

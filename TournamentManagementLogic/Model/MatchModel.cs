@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TournamentManagementLogic.Model;
+﻿namespace TournamentManagementLogic.Model;
 
 public class MatchModel
 {
