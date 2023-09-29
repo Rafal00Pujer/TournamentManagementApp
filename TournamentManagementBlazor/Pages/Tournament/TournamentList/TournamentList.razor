@@ -1,4 +1,4 @@
-﻿@page "/Tournament/List"
+﻿@page "/Tournament/List/{TournamentWasDeleted:bool?}"
 
 @using TournamentManagementLogic.Model
 @using TournamentManagementLogic.Service.Interfaces
@@ -11,6 +11,8 @@
     <div class="row row-cols-1 justify-content-start">
         <h3 class="col text-center">Tournaments</h3>
     </div>
+
+    <Alert AlertText="The tournament has been deleted." Type="Alert.AlertType.Success" EnableCloseBtn="true" @ref="_tournamentDeleted" />
 
     <TournamentCreate OnTournamentCreated="@OnTournamentCreated" />
 
@@ -33,12 +35,43 @@
 </div>
 
 @code {
+    [Parameter]
+    public bool? TournamentWasDeleted { get; set; }
+
     private IEnumerable<TournamentModel>? _tournaments;
+    private Alert _tournamentDeleted;
 
     protected override async Task OnInitializedAsync()
     {
         _tournaments = TournamentService.GetTournaments();
+
         await Task.CompletedTask;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            TryShowDeleteAlert();
+        }
+    }
+
+    private void TryShowDeleteAlert()
+    {
+        if (!TournamentWasDeleted.HasValue)
+        {
+            return;
+        }
+
+        var tournamentWasDeleted = TournamentWasDeleted.Value;
+
+        if (!tournamentWasDeleted)
+        {
+            return;
+        }
+
+        _tournamentDeleted.ShowAlert();
+        StateHasChanged();
     }
 
     private void OnTournamentCreated()

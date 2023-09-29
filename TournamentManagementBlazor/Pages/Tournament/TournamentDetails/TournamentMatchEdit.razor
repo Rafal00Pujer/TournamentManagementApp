@@ -9,6 +9,10 @@
 
 <div class="col-12 my-1 py-2 bg-primary bg-opacity-10 border border-2 border-primary">
     <div class="row justify-content-center text-center text-wrap text-break">
+        <Alert AlertText="Scores saved."
+               Type="Alert.AlertType.Success" EnableCloseBtn="true" AllowStacking="true"
+        @ref="_scoresSaved" />
+
         <h4 class="col-12 col-md-5 col-xl-2">@Match.FirstTeam.ConvertTeamName()</h4>
 
         @if (CanSetWinner)
@@ -53,7 +57,7 @@
                     var set = Match.Sets[setIndex];
 
                     <div class="col-12 my-2">
-                        <EditForm Model="@set" OnValidSubmit="()=>SetService.UpdateScores(set.SetId, set.FirstTeamScore, set.SecondTeamScore)">
+                        <EditForm Model="@set" OnValidSubmit="() => UpdateScores(set)">
                             <ObjectGraphDataAnnotationsValidator />
                             @* <ValidationSummary /> *@
 
@@ -98,6 +102,8 @@
 
     [Parameter]
     public EventCallback OnMatchWinnerChanged { get; set; }
+
+    private Alert _scoresSaved;
 
     private bool CanSetWinner => Match.FirstTeam is not null && Match.SecondTeam is not null;
 
@@ -144,5 +150,12 @@
         SetService.DeleteSet(setToDelete.SetId);
 
         Match.Sets.Remove(setToDelete);
+    }
+
+    private void UpdateScores(TournamentSetModel set)
+    {
+        SetService.UpdateScores(set.SetId, set.FirstTeamScore, set.SecondTeamScore);
+
+        _scoresSaved.ShowAlert();
     }
 }

@@ -1,10 +1,10 @@
 ﻿
-<div class="@string.Concat(CollapseClass, " col-12 alert ", GetTypeClass())">
-    <span>@AlertText</span>
+<div class="@string.Concat(CollapseClass, " col-12 alert ", AlertClass)">
+    <span>@Text</span>
 
     @if (EnableCloseBtn)
     {
-        <button type="button" class="btn-close" aria-label="Close" @onclick="()=>ShowAlert = false"></button>
+        <button type="button" class="btn-close" aria-label="Close" @onclick="()=>HideAlert()"></button>
     }
 </div>
 
@@ -18,29 +18,59 @@
     [Parameter]
     public bool EnableCloseBtn { get; set; }
 
-    public bool ShowAlert
-    {
-        get => _showAlert;
-        set
-        {
-            if (value == _showAlert)
-            {
-                return;
-            }
+    [Parameter]
+    public bool AllowStacking { get; set; }
 
-            _showAlert = value;
-            StateHasChanged();
+    private int _stackCount;
+    private bool _showAlert;
+
+    private string CollapseClass => _showAlert ? "collapse.show" : "collapse";
+    private string Text => _stackCount > 1 ? $"{AlertText} * {_stackCount}" : AlertText;
+    private string AlertClass => $"alert-{Type.ToString().ToLower()}";
+
+    public void ShowAlert(bool resetStack = false)
+    {
+        _showAlert = true;
+
+        if (resetStack)
+        {
+            _stackCount = 1;
+            return;
+        }
+
+        _stackCount++;
+        ClampStackCount();
+    }
+
+    public void HideAlert(bool clearStack = false)
+    {
+        if (clearStack)
+        {
+            _stackCount = 0;
+            _showAlert = false;
+
+            return;
+        }
+
+        _stackCount--;
+        ClampStackCount();
+
+        if (_stackCount == 0)
+        {
+            _showAlert = false;
         }
     }
 
-    private bool _showAlert;
-    private string CollapseClass => ShowAlert ? "collapse.show" : "collapse";
-
-    private string GetTypeClass()
+    private void ClampStackCount()
     {
-        var type = Enum.GetName(Type);
+        var maxStack = int.MaxValue;
 
-        return type is null ? string.Empty : string.Concat("alert-", type.ToLower());
+        if (!AllowStacking)
+        {
+            maxStack = 1;
+        }
+
+        _stackCount = Math.Clamp(_stackCount, 0, maxStack);
     }
 
     public enum AlertType

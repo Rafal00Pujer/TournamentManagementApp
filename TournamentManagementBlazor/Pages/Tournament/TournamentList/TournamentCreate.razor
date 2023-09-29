@@ -5,7 +5,10 @@
 
 <div class="container-fluid">
     <div class="row justify-content-end">
-        <Alert AlertText="The tournament was successfully created." Type="Alert.AlertType.Success" EnableCloseBtn="true" @ref="_tournamentCreated" />
+        <Alert AlertText="The tournament was successfully created."
+               Type="Alert.AlertType.Success" EnableCloseBtn="true" AllowStacking="true"
+        @ref="_tournamentCreated" />
+
         <button class="col-12 col-lg-4 col-xxl-2 btn btn-primary mb-3" type="button" @onclick="ToggleCreateTournamentVisibility">
             Create tournament
         </button>
@@ -97,7 +100,7 @@
 
         _newTournament = new TournamentCreateModel();
         _showCreateTournament = false;
-        _tournamentCreated.ShowAlert = true;
+        _tournamentCreated.ShowAlert();
     }
 
     private void AddTeam() => _newTournament.Teams.Add(new TournamentCreateTeamModel());
